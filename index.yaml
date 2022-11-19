@@ -3,6 +3,25 @@ entries:
   mastodon:
   - apiVersion: v2
     appVersion: v4.0.2
+    created: "2022-11-19T21:38:10.02800297Z"
+    dependencies:
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.3.11
+    description: Rivals.space Mastodon helm chart
+    digest: 6b040c1f1fcffb389ff3812a1883a0e2c8f1376f88c2dd82f96969555dd13ff6
+    icon: https://joinmastodon.org/logos/logo-purple.svg
+    maintainers:
+    - email: coucou@emi.cool
+      name: emilweth
+    name: mastodon
+    type: application
+    urls:
+    - https://github.com/rivals-space/helm-charts/releases/download/mastodon-1.1.3/mastodon-1.1.3.tgz
+    version: 1.1.3
+  - apiVersion: v2
+    appVersion: v4.0.2
     created: "2022-11-19T21:34:01.191923707Z"
     dependencies:
     - condition: redis.enabled
@@ -74,4 +93,4 @@ entries:
     urls:
     - https://github.com/rivals-space/helm-charts/releases/download/mastodon-1.0.1/mastodon-1.0.1.tgz
     version: 1.0.1
-generated: "2022-11-19T21:34:01.191943607Z"
+generated: "2022-11-19T21:38:10.028176783Z"
