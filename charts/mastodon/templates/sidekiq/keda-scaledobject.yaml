@@ -17,7 +17,7 @@ spec:
   minReplicaCount: {{ $sidekiq.keda.minReplicaCount }}
   pollingInterval: {{ $sidekiq.keda.pollingInterval }}
   scaleTargetRef:
-    name: mastodon-sidekiq-default
+    name: {{ include "mastodon.fullname" $ }}-sidekiq-{{ $sidekiq.name }}
   triggers:
     - metadata:
         address: {{ printf "%s-redis-headless.svc.cluster.local:%v" $.Release.Name $.Values.redis.master.service.ports.redis | quote }}
