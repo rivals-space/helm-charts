@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.2]
+### Fixed
+- Added missing labels for sidekiq scaledobject
+
 ## [1.2.1] - 2022-11-19
 ### Changed
 - Mailer concurrency reduced to 1
