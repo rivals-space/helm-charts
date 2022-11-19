@@ -1,8 +1,9 @@
 apiVersion: v2
 name: mastodon
-description: A Helm chart for Kubernetes
+description: Rivals.space Mastodon helm chart
+icon: https://joinmastodon.org/logos/logo-purple.svg
 type: application
-version: 1.0.0
+version: 1.0.1
 appVersion: "v4.0.2"
 dependencies:
   - name: redis
