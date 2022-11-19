@@ -40,6 +40,7 @@ jobs:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
   deploy:
+    needs: release
     permissions:
       contents: write
       pages: write
