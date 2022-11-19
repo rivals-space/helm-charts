@@ -21,7 +21,7 @@ spec:
   triggers:
     - metadata:
         address: {{ printf "%s-redis-headless.svc.cluster.local:%v" $.Release.Name $.Values.redis.master.service.ports.redis | quote }}
-        listLength: {{ $sidekiq.keda.listLength }}
+        listLength: {{ $sidekiq.keda.listLength | quote }}
         listName: "queue:{{ . }}"
       type: redis
 ---
