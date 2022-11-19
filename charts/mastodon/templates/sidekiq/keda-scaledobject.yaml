@@ -9,7 +9,6 @@ apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
   name: {{ include "mastodon.fullname" $ }}-sidekiq-{{ $sidekiq.name }}
-  namespace: mastodon
   labels:
     {{- include "mastodon.labels" $ | nindent 4 }}
 spec:
