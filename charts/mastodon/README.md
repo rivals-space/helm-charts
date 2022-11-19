@@ -6,6 +6,8 @@ A Helm chart for Kubernetes
 
 ## Requirements
 
+[Keda](https://keda.sh/) must be deployed for sidekiqs autoscaling
+
 | Repository | Name | Version |
 |------------|------|---------|
 | https://charts.bitnami.com/bitnami | redis | 17.3.11 |
