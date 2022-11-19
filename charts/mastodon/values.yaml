@@ -188,7 +188,7 @@ mastodon:
             cpu: 200m
             memory: 500Mi
       - name: mailers
-        concurrency: 5
+        concurrency: 1
         queues:
           - mailers
         replicas: 1
