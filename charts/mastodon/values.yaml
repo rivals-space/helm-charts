@@ -1,0 +1,425 @@
+# Default values for mastodon.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+imagePullSecrets: [ ]
+nameOverride: ""
+fullnameOverride: ""
+
+mastodon:
+  image:
+    repository: "tootsuite/mastodon"
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: ""
+  settings:
+    domain: example.com
+    otpSecret: '' # Generate with `docker run -it tootsuite/mastodon:v3.4.4 bundle exec rake secret`
+    secretKeyBase: '' # Generate with `docker run -it tootsuite/mastodon:v3.4.4 bundle exec rake secret`
+    # Generate these two values with
+    #    docker run -it -e OTP_SECRET=<already generated value> -e SECRET_KEY_BASE=<already generated value> tootsuite/mastodon:v3.4.4 bundle exec rake mastodon:webpush:generate_vapid_key
+    vapidPublicKey: ''
+    vapidPrivateKey: ''
+    smtp:
+      server: ''
+      port: ''
+      login: ''
+      password: ''
+      fromAddress: ''
+      domain: ''
+      deliveryMethod: ''
+      authMethod: ''
+      caFile: ''
+      opensslVerifyMode: ''
+      startTlsAuto: ''
+      tls: ''
+      ssl: ''
+    assets:
+      s3:
+        aliasHost: ""
+        bucket: ""
+        endpoint: ""
+        protocol: "https"
+        region: ""
+        url: "http://bucket.zone.endpoint/bucket/"
+  web:
+    settings:
+      concurrency: "2"
+      maxThreads: "5"
+      # -- If enabled, you need to provide DB_RO_NAME / DB_RO_USER / DB_RO_PASS / DB_RO_HOST / DB_RO_PORT env vars
+      rwSplit:
+        enabled: false
+    extraEnv:
+      env: [ ]
+    deployment:
+      replicas: 2
+      autoscaling:
+        enabled: false
+        minReplicas: 1
+        maxReplicas: 100
+        targetCPUUtilizationPercentage: 80
+        # targetMemoryUtilizationPercentage: 80
+      podAnnotations: { }
+      podSecurityContext: { }
+      securityContext: { }
+      resources:
+        limits:
+          memory: 1.5Gi
+        requests:
+          cpu: 500m
+          memory: 1Gi
+      nodeSelector: { }
+      tolerations: [ ]
+      affinity: { }
+    service:
+      type: ClusterIP
+      port: 8080
+    additionalMounts: [ ]
+    #    - volumeMount:
+    #        name: pgsql-certificate
+    #        mountPath: /etc/ssl/certs/psql.pem
+    #        subPath: ca.crt
+    #      volume:
+    #        name: pgsql-certificate
+    #        secret:
+    #          secretName: example-secret
+  streaming:
+    settings:
+      workers: "1"
+    extraEnv:
+      env: [ ]
+    deployment:
+      replicas: 2
+      autoscaling:
+        enabled: false
+        minReplicas: 1
+        maxReplicas: 100
+        targetCPUUtilizationPercentage: 80
+        # targetMemoryUtilizationPercentage: 80
+      podAnnotations: { }
+      podSecurityContext: { }
+      securityContext: { }
+      resources:
+        limits:
+          memory: 300Mi
+        requests:
+          cpu: 50m
+          memory: 200Mi
+      nodeSelector: { }
+      tolerations: [ ]
+      affinity: { }
+    service:
+      type: ClusterIP
+      port: 4000
+    additionalMounts: [ ]
+    #    - volumeMount:
+    #        name: pgsql-certificate
+    #        mountPath: /etc/ssl/certs/psql.pem
+    #        subPath: ca.crt
+    #      volume:
+    #        name: pgsql-certificate
+    #        secret:
+    #          secretName: example-secret
+  sidekiq:
+    extraEnv:
+      env: [ ]
+    podAnnotations: { }
+    podSecurityContext: { }
+    securityContext: { }
+    additionalMounts: [ ]
+    #    - volumeMount:
+    #        name: pgsql-certificate
+    #        mountPath: /etc/ssl/certs/psql.pem
+    #        subPath: ca.crt
+    #      volume:
+    #        name: pgsql-certificate
+    #        secret:
+    #          secretName: example-secret
+    workers:
+      - name: default
+        concurrency: 10
+        queues:
+          - default
+        replicas: 2
+        autoscaling:
+          enabled: false
+          minReplicas: 1
+          maxReplicas: 100
+          targetCPUUtilizationPercentage: 80
+          # targetMemoryUtilizationPercentage: 80
+        nodeSelector: { }
+        tolerations: [ ]
+        affinity: { }
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 200m
+            memory: 500Mi
+      - name: ingress
+        queues:
+          - ingress
+        concurrency: 5
+        replicas: 2
+        autoscaling:
+          enabled: false
+          minReplicas: 1
+          maxReplicas: 100
+          targetCPUUtilizationPercentage: 80
+          # targetMemoryUtilizationPercentage: 80
+        nodeSelector: { }
+        tolerations: [ ]
+        affinity: { }
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 200m
+            memory: 500Mi
+      - name: mailers
+        concurrency: 5
+        queues:
+          - mailers
+        replicas: 1
+        autoscaling:
+          enabled: false
+          minReplicas: 1
+          maxReplicas: 100
+          targetCPUUtilizationPercentage: 80
+          # targetMemoryUtilizationPercentage: 80
+        nodeSelector: { }
+        tolerations: [ ]
+        affinity: { }
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 200m
+            memory: 500Mi
+      - name: pull
+        concurrency: 5
+        queues:
+          - pull
+        replicas: 2
+        autoscaling:
+          enabled: false
+          minReplicas: 1
+          maxReplicas: 100
+          targetCPUUtilizationPercentage: 80
+          # targetMemoryUtilizationPercentage: 80
+        nodeSelector: { }
+        tolerations: [ ]
+        affinity: { }
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 200m
+            memory: 500Mi
+      - name: push
+        concurrency: 10
+        queues:
+          - push
+        replicas: 2
+        autoscaling:
+          enabled: false
+          minReplicas: 1
+          maxReplicas: 100
+          targetCPUUtilizationPercentage: 80
+          # targetMemoryUtilizationPercentage: 80
+        nodeSelector: { }
+        tolerations: [ ]
+        affinity: { }
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 200m
+            memory: 500Mi
+      - name: scheduler
+        queues:
+          - scheduler
+        concurrency: 3
+        # leave scheduler to 1 replica
+        replicas: 1
+        # never enable autoscaling on scheduler
+        autoscaling:
+          enabled: false
+        nodeSelector: { }
+        tolerations: [ ]
+        affinity: { }
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 200m
+            memory: 500Mi
+  cronjobs:
+    extraEnv:
+      env: [ ]
+    podAnnotations: { }
+    podSecurityContext: { }
+    securityContext: { }
+    additionalMounts: [ ]
+    #    - volumeMount:
+    #        name: pgsql-certificate
+    #        mountPath: /etc/ssl/certs/psql.pem
+    #        subPath: ca.crt
+    #      volume:
+    #        name: pgsql-certificate
+    #        secret:
+    #          secretName: example-secret
+    tasks:
+      - name: media-remove
+        command: 'tootctl media remove --days 7 --concurrency 5 --verbose'
+        schedule: "0 1 * * *"
+        nodeSelector: { }
+        tolerations: [ ]
+        affinity: { }
+        resources: { }
+      - name: accounts-cull
+        command: 'tootctl accounts cull --concurrency 5'
+        schedule: "0 1 * * *"
+        nodeSelector: { }
+        tolerations: [ ]
+        affinity: { }
+        resources: { }
+      - name: media-remove-orphans
+        command: 'tootctl media remove-orphans'
+        schedule: "0 1 * * *"
+        nodeSelector: { }
+        tolerations: [ ]
+        affinity: { }
+        resources: { }
+      - name: preview-cards-remove
+        command: 'tootctl preview_cards remove --days 7 --concurrency 5 --verbose'
+        schedule: "0 1 * * *"
+        nodeSelector: { }
+        tolerations: [ ]
+        affinity: { }
+        resources: { }
+
+  extraEnv:
+    fromSecret: ''
+    fromConfigMap: ''
+    env: [ ]
+
+nginxReverse:
+  deployment:
+    image:
+      repository: nginxinc/nginx-unprivileged
+      pullPolicy: IfNotPresent
+      tag: stable-alpine
+    replicas: 2
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 100
+      targetCPUUtilizationPercentage: 80
+      # targetMemoryUtilizationPercentage: 80
+    podAnnotations: { }
+    podSecurityContext: { }
+    securityContext: { }
+    resources:
+      limits:
+        memory: 500Mi
+      requests:
+        cpu: 30m
+        memory: 200Mi
+    nodeSelector: { }
+    tolerations: [ ]
+    affinity: { }
+  service:
+    type: ClusterIP
+    port: 8080
+  additionalMounts: [ ]
+  #    - volumeMount:
+  #        name: pgsql-certificate
+  #        mountPath: /etc/ssl/certs/psql.pem
+  #        subPath: ca.crt
+  #      volume:
+  #        name: pgsql-certificate
+  #        secret:
+  #          secretName: example-secret
+
+varnishS3:
+  deployment:
+    image:
+      repository: varnish
+      pullPolicy: IfNotPresent
+      tag: fresh-alpine
+    replicas: 2
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 100
+      targetCPUUtilizationPercentage: 80
+      # targetMemoryUtilizationPercentage: 80
+    podAnnotations: { }
+    podSecurityContext: { }
+    securityContext: { }
+    resources:
+      limits:
+        memory: 600Mi
+      requests:
+        cpu: 150m
+        memory: 400Mi
+    nodeSelector: { }
+    tolerations: [ ]
+    affinity: { }
+  service:
+    type: ClusterIP
+    port: 8080
+  additionalMounts: [ ]
+  #    - volumeMount:
+  #        name: pgsql-certificate
+  #        mountPath: /etc/ssl/certs/psql.pem
+  #        subPath: ca.crt
+  #      volume:
+  #        name: pgsql-certificate
+  #        secret:
+  #          secretName: example-secret
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: { }
+  # kubernetes.io/ingress.class: nginx
+  # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+  tls: [ ]
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+mediaIngress:
+  enabled: false
+  className: ""
+  annotations: { }
+  # kubernetes.io/ingress.class: nginx
+  # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: [ ]
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+redis:
+  enabled: true
+  architecture: 'standalone'
+  auth:
+    enabled: false
+    sentinel: false
+  master:
+    persistence:
+      enabled: false
+  replica:
+    replicaCount: 0
+

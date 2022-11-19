@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "mastodon.fullname" . }}-env
+  labels:
+    {{- include "mastodon.labels" . | nindent 4 }}
+data:
+  {{- if .Values.redis.enabled }}
+  REDIS_HOST: {{ printf "%s-redis-headless" .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local
+  REDIS_PORT: {{ .Values.redis.master.service.ports.redis | quote }}
+  {{- end }}
+  GID: "991"
+  UID: "991"
+  LOCAL_DOMAIN: {{ .Values.mastodon.settings.domain }}
+  {{- if .Values.mastodon.settings.smtp.server }}
+  SMTP_SERVER: {{ .Values.mastodon.settings.smtp.server }}
+  {{- end }}
+  {{- if .Values.mastodon.settings.smtp.port }}
+  SMTP_PORT: {{ .Values.mastodon.settings.smtp.port | quote }}
+  {{- end }}
+  {{- if .Values.mastodon.settings.smtp.login }}
+  SMTP_LOGIN: {{ .Values.mastodon.settings.smtp.login }}
+  {{- end }}
+  {{- if .Values.mastodon.settings.smtp.fromAddress }}
+  SMTP_FROM_ADDRESS: {{ .Values.mastodon.settings.smtp.fromAddress }}
+  {{- end }}
+  {{- if .Values.mastodon.settings.smtp.domain }}
+  SMTP_DOMAIN: {{ .Values.mastodon.settings.smtp.domain }}
+  {{- end }}
+  {{- if .Values.mastodon.settings.smtp.deliveryMethod }}
+  SMTP_DELIVERY_METHOD: {{ .Values.mastodon.settings.smtp.deliveryMethod }}
+  {{- end }}
+  {{- if .Values.mastodon.settings.smtp.authMethod }}
+  SMTP_AUTH_METHOD: {{ .Values.mastodon.settings.smtp.authMethod }}
+  {{- end }}
+  {{- if .Values.mastodon.settings.smtp.caFile }}
+  SMTP_CA_FILE: {{ .Values.mastodon.settings.smtp.caFile }}
+  {{- end }}
+  {{- if .Values.mastodon.settings.smtp.opensslVerifyMode }}
+  SMTP_OPENSSL_VERIFY_MODE: {{ .Values.mastodon.settings.smtp.opensslVerifyMode }}
+  {{- end }}
+  {{- if .Values.mastodon.settings.smtp.startTlsAuto }}
+  SMTP_ENABLE_STARTTLS_AUTO: {{ .Values.mastodon.settings.smtp.startTlsAuto }}
+  {{- end }}
+  {{- if .Values.mastodon.settings.smtp.tls }}
+  SMTP_TLS: {{ .Values.mastodon.settings.smtp.tls }}
+  {{- end }}
+  {{- if .Values.mastodon.settings.smtp.ssl }}
+  SMTP_SSL: {{ .Values.mastodon.settings.smtp.ssl }}
+  {{- end }}
+  S3_ENABLED: "true"
+  {{- if .Values.mastodon.settings.assets.s3.aliasHost }}
+  S3_ALIAS_HOST: {{ .Values.mastodon.settings.assets.s3.aliasHost | quote }}
+  {{- end }}
+  {{- if .Values.mastodon.settings.assets.s3.bucket }}
+  S3_BUCKET: {{ .Values.mastodon.settings.assets.s3.bucket | quote }}
+  {{- end }}
+  {{- if .Values.mastodon.settings.assets.s3.endpoint }}
+  S3_ENDPOINT: {{ .Values.mastodon.settings.assets.s3.protocol }}://{{ .Values.mastodon.settings.assets.s3.endpoint }}
+  {{- end }}
+  {{- if .Values.mastodon.settings.assets.s3.protocol }}
+  S3_PROTOCOL: {{ .Values.mastodon.settings.assets.s3.protocol }}
+  {{- end }}
+  {{- if .Values.mastodon.settings.assets.s3.region }}
+  S3_REGION: {{ .Values.mastodon.settings.assets.s3.region }}
+  {{- end }}

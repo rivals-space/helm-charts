@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "mastodon.fullname" . }}-mastodon-db-config-rw-split
+  labels:
+    {{- include "mastodon.labels" . | nindent 4 }}
+data:
+  database.yml: |
+    default: &default
+      adapter: postgresql
+      pool: <%= ENV["DB_POOL"] || ENV['MAX_THREADS'] || 5 %>
+      timeout: 5000
+      encoding: unicode
+      sslmode: <%= ENV['DB_SSLMODE'] || "prefer" %>
+
+    development:
+      <<: *default
+      database: <%= ENV['DB_NAME'] || 'mastodon_development' %>
+      username: <%= ENV['DB_USER'] %>
+      password: <%= (ENV['DB_PASS'] || '').to_json %>
+      host: <%= ENV['DB_HOST'] %>
+      port: <%= ENV['DB_PORT'] %>
+
+    # Warning: The database defined as "test" will be erased and
+    # re-generated from your development database when you run "rake".
+    # Do not set this db to the same as development or production.
+    test:
+      <<: *default
+      database: <%= ENV['DB_NAME'] || 'mastodon' %>_test<%= ENV['TEST_ENV_NUMBER'] %>
+      username: <%= ENV['DB_USER'] %>
+      password: <%= (ENV['DB_PASS'] || '').to_json %>
+      host: <%= ENV['DB_HOST'] %>
+      port: <%= ENV['DB_PORT'] %>
+
+    production:
+      <<: *default
+      adapter: postgresql_makara
+      prepared_statements: false
+      makara:
+        id: postgres
+        sticky: true
+        connections:
+        - role: master
+          blacklist_duration: 0
+          database: <%= ENV['DB_NAME'] || 'mastodon_production' %>
+          username: <%= ENV['DB_USER'] || 'mastodon' %>
+          password: <%= (ENV['DB_PASS'] || '').to_json %>
+          host: <%= ENV['DB_HOST'] || 'localhost' %>
+          port: <%= ENV['DB_PORT'] || 5432 %>
+        - role: slave
+          database: <%= ENV['DB_RO_NAME'] || 'mastodon_production' %>
+          username: <%= ENV['DB_RO_USER'] || 'mastodon' %>
+          password: <%= (ENV['DB_RO_PASS'] || '').to_json %>
+          host: <%= ENV['DB_RO_HOST'] || 'localhost' %>
+          port: <%= ENV['DB_RO_PORT'] || 5432 %>

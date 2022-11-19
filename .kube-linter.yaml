@@ -1,0 +1,22 @@
+checks:
+  doNotAutoAddDefaults: true
+  include:
+    - latest-tag
+    - deprecated-service-account-field
+    - docker-sock
+    - drop-net-raw-capability
+    - env-var-secret
+    - host-ipc
+    - host-network
+    - host-pid
+    - mismatching-selector
+    - no-anti-affinity
+    - no-extensions-v1beta
+    - non-existent-service-account
+    - privilege-escalation-container
+    - privileged-container
+    - run-as-non-root
+    - no-read-only-root-fs
+    - sensitive-host-mounts
+    - ssh-port
+    - unsafe-sysctls

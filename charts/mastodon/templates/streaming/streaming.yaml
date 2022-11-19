@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "mastodon.fullname" . }}-streaming
+  labels:
+    {{- include "mastodon.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.mastodon.streaming.service.type }}
+  ports:
+    - port: {{ .Values.mastodon.streaming.service.port }}
+      targetPort: streaming
+      protocol: TCP
+      name: streaming
+  selector:
+    {{- include "mastodon.selectorLabels.global" . | nindent 4 }}
+    {{- include "mastodon.selectorLabels.streaming" . | nindent 4 }}

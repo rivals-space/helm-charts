@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "mastodon.fullname" . }}-varnish-s3-config
+  labels:
+    {{- include "mastodon.labels" . | nindent 4 }}
+data:
+  default.vcl: |
+    vcl 4.0;
+
+    import dynamic;
+
+    backend default {
+      .host = "";
+      .port = "8080";
+    }
+
+    acl ipv4_only { "0.0.0.0"/0; }
+
+    sub vcl_init {
+      new ddir = dynamic.director(
+        port = "80",
+        ttl = 10s,
+        whitelist = ipv4_only
+      );
+    }
+
+    sub vcl_recv {
+
+        if(req.method != "GET" && req.method != "HEAD") {
+            return(synth(900)); //method not allowed
+        }
+
+        set req.backend_hint = ddir.backend("{{ .Values.mastodon.settings.assets.s3.endpoint }}");
+        set req.http.Host = "{{ .Values.mastodon.settings.assets.s3.endpoint }}";
+        set req.http.X-Forwarded-For = client.ip;
+        set req.url = regsub(req.url, "^/", "/{{ .Values.mastodon.settings.assets.s3.bucket }}/");
+
+        return(hash);
+
+    }
+
+    sub vcl_backend_response {
+        // strip the cookie before the image is inserted into cache
+        if (bereq.url ~ "\.(png|gif|jpg|ico|txt|swf|css|js)$") {
+            unset beresp.http.Set-Cookie;
+            set beresp.ttl = 3d;
+        }
+        if (beresp.status == 404) {
+            return(error(404, "Not found"));
+        }
+    }
+
+    sub vcl_deliver {
+        //clean up for delivery
+        unset resp.http.Via;
+        unset resp.http.X-Whatever;
+        unset resp.http.X-Powered-By;
+        unset resp.http.X-Varnish;
+        unset resp.http.Age;
+        unset resp.http.Server;
+        //s3 stuff
+        unset resp.http.X-Amz-Id-2;
+        unset resp.http.X-Amz-Meta-Group;
+        unset resp.http.X-Amz-Meta-Owner;
+        unset resp.http.X-Amz-Meta-Permissions;
+        unset resp.http.X-Amz-Request-Id;
+        unset resp.http.X-Amz-Version-Id;
+
+        if (obj.hits > 0) {
+            set resp.http.X-Cache = "HIT";
+        } else {
+            set resp.http.X-Cache = "MISS";
+        }
+    }
+
+
+    sub vcl_backend_error {
+        set beresp.http.Content-Type = "text/html; charset=utf-8";
+        if (beresp.status == 404) {
+            synthetic({"404 Not Found"});
+        } else {
+            synthetic( {"Error! Please retry later.."} );
+        }
+        return(deliver);
+    }
+
+    sub vcl_synth {
+        if (resp.status > 550) {
+            set resp.http.Content-Type = "text/plain; charset=utf-8";
+            if (resp.status == 900) {
+                set resp.status = 405;
+                synthetic({"Method Not Allowed"});
+            }elseif (resp.status == 800) {
+                set resp.status = 403;
+                synthetic({"Hotlinking Not Allowed"});
+            }elseif (resp.status == 700) {
+                set resp.status = 404;
+                synthetic({"Not Found"});
+            }elseif (resp.status == 600) {
+                set resp.status = 520;
+                synthetic({"Unknown Error"});
+            }
+        }
+        return(deliver);
+    }

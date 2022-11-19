@@ -1,0 +1,90 @@
+{{- range .Values.mastodon.sidekiq.workers }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mastodon.fullname" $ }}-sidekiq-{{ .name }}
+  labels:
+    {{- include "mastodon.labels" $ | nindent 4 }}
+spec:
+  {{- if eq .autoscaling.enabled false }}
+  replicas: {{ .replicas }}
+  {{- end }}
+  revisionHistoryLimit: 3
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "mastodon.selectorLabels.global" $ | nindent 6 }}
+      {{- include "mastodon.selectorLabels.sidekiq" $ | nindent 6 }}
+  template:
+    metadata:
+      {{- with $.Values.mastodon.sidekiq.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "mastodon.selectorLabels.global" $ | nindent 8 }}
+        {{- include "mastodon.selectorLabels.sidekiq" $ | nindent 8 }}
+    spec:
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml $.Values.mastodon.sidekiq.podSecurityContext | nindent 8 }}
+      containers:
+        - name: sidekiq-{{ .name }}
+          image: "{{ $.Values.mastodon.image.repository }}:{{ $.Values.mastodon.image.tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ $.Values.mastodon.image.pullPolicy }}
+          command:
+            - "/usr/bin/env"
+            - "bash"
+            - "-c"
+            - >-
+              bundle exec sidekiq -c {{ .concurrency }} {{ range .queues }} -q {{ . }} {{ end }}
+          env:
+          {{- with $.Values.mastodon.extraEnv.env }}
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $.Values.mastodon.sidekiq.extraEnv.env }}
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          securityContext:
+            {{- toYaml $.Values.mastodon.sidekiq.securityContext | nindent 12 }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "mastodon.fullname" $ }}-env
+            - secretRef:
+                name: {{ include "mastodon.fullname" $ }}-env
+            {{- if $.Values.mastodon.extraEnv.fromConfigMap }}
+            - configMapRef:
+                name: {{ $.Values.mastodon.extraEnv.fromConfigMap }}
+            {{- end }}
+            {{- if $.Values.mastodon.extraEnv.fromSecret }}
+            - secretRef:
+                name: {{ $.Values.mastodon.extraEnv.fromSecret }}
+            {{- end }}
+          volumeMounts:
+          {{- range $.Values.mastodon.sidekiq.additionalMounts }}
+            - {{- toYaml .volumeMount | nindent 14 }}
+          {{- end }}
+          resources:
+            {{- toYaml .resources | nindent 12 }}
+      volumes:
+      {{- range $.Values.mastodon.sidekiq.additionalMounts }}
+        - {{- toYaml .volume | nindent 10 }}
+      {{- end }}
+      {{- with .nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+---
+{{- end }}

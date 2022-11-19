@@ -1,0 +1,52 @@
+{{- range .Values.mastodon.cronjobs.tasks }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "mastodon.fullname" $ }}-{{ .name }}
+  labels:
+    {{- include "mastodon.labels" $ | nindent 4 }}
+spec:
+  schedule: {{ .schedule | quote }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: cronjob-{{ .name }}
+              image: "{{ $.Values.mastodon.image.repository }}:{{ $.Values.mastodon.image.tag | default $.Chart.AppVersion }}"
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -c
+                - {{ .command | quote }}
+              volumeMounts:
+              {{- range $.Values.mastodon.cronjobs.additionalMounts }}
+                - {{- toYaml .volumeMount | nindent 14 }}
+              {{- end }}
+              env:
+              {{- with $.Values.mastodon.extraEnv.env }}
+              {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with $.Values.mastodon.cronjobs.extraEnv.env }}
+              {{- toYaml . | nindent 16 }}
+              {{- end }}
+              envFrom:
+                - configMapRef:
+                    name: {{ include "mastodon.fullname" $ }}-env
+                - secretRef:
+                    name: {{ include "mastodon.fullname" $ }}-env
+                {{- if $.Values.mastodon.extraEnv.fromConfigMap }}
+                - configMapRef:
+                    name: {{ $.Values.mastodon.extraEnv.fromConfigMap }}
+                {{- end }}
+                {{- if $.Values.mastodon.extraEnv.fromSecret }}
+                - secretRef:
+                    name: {{ $.Values.mastodon.extraEnv.fromSecret }}
+                {{- end }}
+          restartPolicy: OnFailure
+          volumes:
+          {{- range $.Values.mastodon.cronjobs.additionalMounts }}
+            - {{- toYaml .volume | nindent 10 }}
+          {{- end }}
+---
+{{- end }}
