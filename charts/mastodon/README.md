@@ -1,8 +1,14 @@
 # mastodon
 
-![Version: 1.1.0](https://img.shields.io/badge/Version-1.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.0.2](https://img.shields.io/badge/AppVersion-v4.0.2-informational?style=flat-square)
+![Version: 1.1.3](https://img.shields.io/badge/Version-1.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.0.2](https://img.shields.io/badge/AppVersion-v4.0.2-informational?style=flat-square)
 
 Rivals.space Mastodon helm chart
+
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| emilweth | <coucou@emi.cool> |  |
 
 ## Requirements
 
@@ -119,7 +125,7 @@ Rivals.space Mastodon helm chart
 | mastodon.sidekiq.workers[1].resources.requests.memory | string | `"500Mi"` |  |
 | mastodon.sidekiq.workers[1].tolerations | list | `[]` |  |
 | mastodon.sidekiq.workers[2].affinity | object | `{}` |  |
-| mastodon.sidekiq.workers[2].concurrency | int | `5` |  |
+| mastodon.sidekiq.workers[2].concurrency | int | `1` |  |
 | mastodon.sidekiq.workers[2].keda.cooldownPeriod | int | `300` |  |
 | mastodon.sidekiq.workers[2].keda.enabled | bool | `false` |  |
 | mastodon.sidekiq.workers[2].keda.listLength | int | `50` |  |
