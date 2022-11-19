@@ -10,3 +10,6 @@
 .idea/
 *.tmproj
 .vscode/
+
+# prod/test/dev/... values
+*.values.yaml

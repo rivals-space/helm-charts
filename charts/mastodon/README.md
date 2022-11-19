@@ -1,8 +1,8 @@
 # mastodon
 
-![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.0.2](https://img.shields.io/badge/AppVersion-v4.0.2-informational?style=flat-square)
+![Version: 1.1.0](https://img.shields.io/badge/Version-1.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.0.2](https://img.shields.io/badge/AppVersion-v4.0.2-informational?style=flat-square)
 
-A Helm chart for Kubernetes
+Rivals.space Mastodon helm chart
 
 ## Requirements
 
@@ -68,8 +68,8 @@ A Helm chart for Kubernetes
 | mastodon.settings.assets.s3.region | string | `""` |  |
 | mastodon.settings.assets.s3.url | string | `"http://bucket.zone.endpoint/bucket/"` |  |
 | mastodon.settings.domain | string | `"example.com"` |  |
-| mastodon.settings.otpSecret | string | `""` |  |
-| mastodon.settings.secretKeyBase | string | `""` |  |
+| mastodon.settings.otpSecret | string | `""` | Generate with `docker run -it tootsuite/mastodon:v3.4.4 bundle exec rake secret` |
+| mastodon.settings.secretKeyBase | string | `""` | Generate with `docker run -it tootsuite/mastodon:v3.4.4 bundle exec rake secret` |
 | mastodon.settings.smtp.authMethod | string | `""` |  |
 | mastodon.settings.smtp.caFile | string | `""` |  |
 | mastodon.settings.smtp.deliveryMethod | string | `""` |  |
@@ -84,46 +84,48 @@ A Helm chart for Kubernetes
 | mastodon.settings.smtp.startTlsAuto | string | `""` |  |
 | mastodon.settings.smtp.tls | string | `""` |  |
 | mastodon.settings.vapidPrivateKey | string | `""` |  |
-| mastodon.settings.vapidPublicKey | string | `""` |  |
+| mastodon.settings.vapidPublicKey | string | `""` | Generate these two values with docker run -it -e OTP_SECRET=<already generated value> -e SECRET_KEY_BASE=<already generated value> tootsuite/mastodon:v3.4.4 bundle exec rake mastodon:webpush:generate_vapid_key |
 | mastodon.sidekiq.additionalMounts | list | `[]` |  |
 | mastodon.sidekiq.extraEnv.env | list | `[]` |  |
 | mastodon.sidekiq.podAnnotations | object | `{}` |  |
 | mastodon.sidekiq.podSecurityContext | object | `{}` |  |
 | mastodon.sidekiq.securityContext | object | `{}` |  |
 | mastodon.sidekiq.workers[0].affinity | object | `{}` |  |
-| mastodon.sidekiq.workers[0].autoscaling.enabled | bool | `false` |  |
-| mastodon.sidekiq.workers[0].autoscaling.maxReplicas | int | `100` |  |
-| mastodon.sidekiq.workers[0].autoscaling.minReplicas | int | `1` |  |
-| mastodon.sidekiq.workers[0].autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
-| mastodon.sidekiq.workers[0].concurrency | int | `10` |  |
+| mastodon.sidekiq.workers[0].concurrency | int | `1` |  |
+| mastodon.sidekiq.workers[0].keda.cooldownPeriod | int | `300` |  |
+| mastodon.sidekiq.workers[0].keda.enabled | bool | `false` |  |
+| mastodon.sidekiq.workers[0].keda.listLength | int | `50` |  |
+| mastodon.sidekiq.workers[0].keda.maxReplicaCount | int | `10` |  |
+| mastodon.sidekiq.workers[0].keda.minReplicaCount | int | `1` |  |
+| mastodon.sidekiq.workers[0].keda.pollingInterval | int | `30` |  |
 | mastodon.sidekiq.workers[0].name | string | `"default"` |  |
 | mastodon.sidekiq.workers[0].nodeSelector | object | `{}` |  |
 | mastodon.sidekiq.workers[0].queues[0] | string | `"default"` |  |
-| mastodon.sidekiq.workers[0].replicas | int | `2` |  |
+| mastodon.sidekiq.workers[0].replicas | int | `1` |  |
 | mastodon.sidekiq.workers[0].resources.limits.memory | string | `"1Gi"` |  |
 | mastodon.sidekiq.workers[0].resources.requests.cpu | string | `"200m"` |  |
 | mastodon.sidekiq.workers[0].resources.requests.memory | string | `"500Mi"` |  |
 | mastodon.sidekiq.workers[0].tolerations | list | `[]` |  |
 | mastodon.sidekiq.workers[1].affinity | object | `{}` |  |
-| mastodon.sidekiq.workers[1].autoscaling.enabled | bool | `false` |  |
-| mastodon.sidekiq.workers[1].autoscaling.maxReplicas | int | `100` |  |
-| mastodon.sidekiq.workers[1].autoscaling.minReplicas | int | `1` |  |
-| mastodon.sidekiq.workers[1].autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
-| mastodon.sidekiq.workers[1].concurrency | int | `5` |  |
+| mastodon.sidekiq.workers[1].concurrency | int | `1` |  |
+| mastodon.sidekiq.workers[1].keda.enabled | bool | `false` |  |
+| mastodon.sidekiq.workers[1].keda.listLength | int | `50` |  |
 | mastodon.sidekiq.workers[1].name | string | `"ingress"` |  |
 | mastodon.sidekiq.workers[1].nodeSelector | object | `{}` |  |
 | mastodon.sidekiq.workers[1].queues[0] | string | `"ingress"` |  |
-| mastodon.sidekiq.workers[1].replicas | int | `2` |  |
+| mastodon.sidekiq.workers[1].replicas | int | `1` |  |
 | mastodon.sidekiq.workers[1].resources.limits.memory | string | `"1Gi"` |  |
 | mastodon.sidekiq.workers[1].resources.requests.cpu | string | `"200m"` |  |
 | mastodon.sidekiq.workers[1].resources.requests.memory | string | `"500Mi"` |  |
 | mastodon.sidekiq.workers[1].tolerations | list | `[]` |  |
 | mastodon.sidekiq.workers[2].affinity | object | `{}` |  |
-| mastodon.sidekiq.workers[2].autoscaling.enabled | bool | `false` |  |
-| mastodon.sidekiq.workers[2].autoscaling.maxReplicas | int | `100` |  |
-| mastodon.sidekiq.workers[2].autoscaling.minReplicas | int | `1` |  |
-| mastodon.sidekiq.workers[2].autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
 | mastodon.sidekiq.workers[2].concurrency | int | `5` |  |
+| mastodon.sidekiq.workers[2].keda.cooldownPeriod | int | `300` |  |
+| mastodon.sidekiq.workers[2].keda.enabled | bool | `false` |  |
+| mastodon.sidekiq.workers[2].keda.listLength | int | `50` |  |
+| mastodon.sidekiq.workers[2].keda.maxReplicaCount | int | `10` |  |
+| mastodon.sidekiq.workers[2].keda.minReplicaCount | int | `1` |  |
+| mastodon.sidekiq.workers[2].keda.pollingInterval | int | `30` |  |
 | mastodon.sidekiq.workers[2].name | string | `"mailers"` |  |
 | mastodon.sidekiq.workers[2].nodeSelector | object | `{}` |  |
 | mastodon.sidekiq.workers[2].queues[0] | string | `"mailers"` |  |
@@ -133,36 +135,43 @@ A Helm chart for Kubernetes
 | mastodon.sidekiq.workers[2].resources.requests.memory | string | `"500Mi"` |  |
 | mastodon.sidekiq.workers[2].tolerations | list | `[]` |  |
 | mastodon.sidekiq.workers[3].affinity | object | `{}` |  |
-| mastodon.sidekiq.workers[3].autoscaling.enabled | bool | `false` |  |
-| mastodon.sidekiq.workers[3].autoscaling.maxReplicas | int | `100` |  |
-| mastodon.sidekiq.workers[3].autoscaling.minReplicas | int | `1` |  |
-| mastodon.sidekiq.workers[3].autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
-| mastodon.sidekiq.workers[3].concurrency | int | `5` |  |
+| mastodon.sidekiq.workers[3].concurrency | int | `1` |  |
+| mastodon.sidekiq.workers[3].keda.cooldownPeriod | int | `300` |  |
+| mastodon.sidekiq.workers[3].keda.enabled | bool | `false` |  |
+| mastodon.sidekiq.workers[3].keda.listLength | int | `50` |  |
+| mastodon.sidekiq.workers[3].keda.maxReplicaCount | int | `10` |  |
+| mastodon.sidekiq.workers[3].keda.minReplicaCount | int | `1` |  |
+| mastodon.sidekiq.workers[3].keda.pollingInterval | int | `30` |  |
 | mastodon.sidekiq.workers[3].name | string | `"pull"` |  |
 | mastodon.sidekiq.workers[3].nodeSelector | object | `{}` |  |
 | mastodon.sidekiq.workers[3].queues[0] | string | `"pull"` |  |
-| mastodon.sidekiq.workers[3].replicas | int | `2` |  |
+| mastodon.sidekiq.workers[3].replicas | int | `1` |  |
 | mastodon.sidekiq.workers[3].resources.limits.memory | string | `"1Gi"` |  |
 | mastodon.sidekiq.workers[3].resources.requests.cpu | string | `"200m"` |  |
 | mastodon.sidekiq.workers[3].resources.requests.memory | string | `"500Mi"` |  |
 | mastodon.sidekiq.workers[3].tolerations | list | `[]` |  |
 | mastodon.sidekiq.workers[4].affinity | object | `{}` |  |
-| mastodon.sidekiq.workers[4].autoscaling.enabled | bool | `false` |  |
-| mastodon.sidekiq.workers[4].autoscaling.maxReplicas | int | `100` |  |
-| mastodon.sidekiq.workers[4].autoscaling.minReplicas | int | `1` |  |
-| mastodon.sidekiq.workers[4].autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
-| mastodon.sidekiq.workers[4].concurrency | int | `10` |  |
+| mastodon.sidekiq.workers[4].concurrency | int | `1` |  |
+| mastodon.sidekiq.workers[4].keda.cooldownPeriod | int | `300` |  |
+| mastodon.sidekiq.workers[4].keda.enabled | bool | `false` |  |
+| mastodon.sidekiq.workers[4].keda.listLength | int | `50` |  |
+| mastodon.sidekiq.workers[4].keda.maxReplicaCount | int | `10` |  |
+| mastodon.sidekiq.workers[4].keda.minReplicaCount | int | `1` |  |
+| mastodon.sidekiq.workers[4].keda.pollingInterval | int | `30` |  |
 | mastodon.sidekiq.workers[4].name | string | `"push"` |  |
 | mastodon.sidekiq.workers[4].nodeSelector | object | `{}` |  |
 | mastodon.sidekiq.workers[4].queues[0] | string | `"push"` |  |
-| mastodon.sidekiq.workers[4].replicas | int | `2` |  |
+| mastodon.sidekiq.workers[4].replicas | int | `1` |  |
 | mastodon.sidekiq.workers[4].resources.limits.memory | string | `"1Gi"` |  |
 | mastodon.sidekiq.workers[4].resources.requests.cpu | string | `"200m"` |  |
 | mastodon.sidekiq.workers[4].resources.requests.memory | string | `"500Mi"` |  |
 | mastodon.sidekiq.workers[4].tolerations | list | `[]` |  |
 | mastodon.sidekiq.workers[5].affinity | object | `{}` |  |
-| mastodon.sidekiq.workers[5].autoscaling.enabled | bool | `false` |  |
-| mastodon.sidekiq.workers[5].concurrency | int | `3` |  |
+| mastodon.sidekiq.workers[5].concurrency | int | `5` |  |
+| mastodon.sidekiq.workers[5].keda.enabled | bool | `false` |  |
+| mastodon.sidekiq.workers[5].keda.listLength | int | `999999999` |  |
+| mastodon.sidekiq.workers[5].keda.maxReplicaCount | int | `10` |  |
+| mastodon.sidekiq.workers[5].keda.minReplicaCount | int | `1` |  |
 | mastodon.sidekiq.workers[5].name | string | `"scheduler"` |  |
 | mastodon.sidekiq.workers[5].nodeSelector | object | `{}` |  |
 | mastodon.sidekiq.workers[5].queues[0] | string | `"scheduler"` |  |
@@ -210,7 +219,7 @@ A Helm chart for Kubernetes
 | mastodon.web.service.type | string | `"ClusterIP"` |  |
 | mastodon.web.settings.concurrency | string | `"2"` |  |
 | mastodon.web.settings.maxThreads | string | `"5"` |  |
-| mastodon.web.settings.rwSplit | object | `{"enabled":false}` | If enabled, you need to provide DB_RO_NAME / DB_RO_USER / DB_RO_PASS / DB_RO_HOST / DB_RO_PORT env vars |
+| mastodon.web.settings.rwSplit | object | `{"enabled":false}` | If enabled, you need to provide these env vars : DB_RO_NAME DB_RO_USER DB_RO_PASS DB_RO_HOST DB_RO_PORT |
 | mediaIngress.annotations | object | `{}` |  |
 | mediaIngress.className | string | `""` |  |
 | mediaIngress.enabled | bool | `false` |  |

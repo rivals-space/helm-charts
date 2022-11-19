@@ -6,9 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2022-11-19
+### Added
+- Keda autoscaling for sidekiqs
+
 ## [1.0.0] - 2022-11-19
 ### Added
 - Chart initialization
-
-[1.0.0]: https://github.com/rivals-space/helm-chart/releases/tag/1.0.0
-[Unreleased]: https://github.com/rivals-space/helm-chart/compare/main...develop
