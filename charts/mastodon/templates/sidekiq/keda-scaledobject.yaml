@@ -10,6 +10,8 @@ kind: ScaledObject
 metadata:
   name: {{ include "mastodon.fullname" $ }}-sidekiq-{{ $sidekiq.name }}
   namespace: mastodon
+  labels:
+    {{- include "mastodon.labels" $ | nindent 4 }}
 spec:
   cooldownPeriod: {{ $sidekiq.keda.cooldownPeriod }}
   maxReplicaCount: {{ $sidekiq.keda.maxReplicaCount }}
