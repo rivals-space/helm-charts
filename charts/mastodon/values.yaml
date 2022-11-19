@@ -1,8 +1,10 @@
+---
+
 # Default values for mastodon.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-imagePullSecrets: [ ]
+imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
@@ -10,14 +12,20 @@ mastodon:
   image:
     repository: "tootsuite/mastodon"
     pullPolicy: IfNotPresent
-    # Overrides the image tag whose default is the chart appVersion.
     tag: ""
   settings:
     domain: example.com
-    otpSecret: '' # Generate with `docker run -it tootsuite/mastodon:v3.4.4 bundle exec rake secret`
-    secretKeyBase: '' # Generate with `docker run -it tootsuite/mastodon:v3.4.4 bundle exec rake secret`
-    # Generate these two values with
-    #    docker run -it -e OTP_SECRET=<already generated value> -e SECRET_KEY_BASE=<already generated value> tootsuite/mastodon:v3.4.4 bundle exec rake mastodon:webpush:generate_vapid_key
+    # -- Generate with
+    # `docker run -it tootsuite/mastodon:v3.4.4 bundle exec rake secret`
+    otpSecret: ''
+    # -- Generate with
+    # `docker run -it tootsuite/mastodon:v3.4.4 bundle exec rake secret`
+    secretKeyBase: ''
+    # -- Generate these two values with
+    # docker run -it -e OTP_SECRET=<already generated value>
+    # -e SECRET_KEY_BASE=<already generated value>
+    # tootsuite/mastodon:v3.4.4
+    # bundle exec rake mastodon:webpush:generate_vapid_key
     vapidPublicKey: ''
     vapidPrivateKey: ''
     smtp:
@@ -46,11 +54,16 @@ mastodon:
     settings:
       concurrency: "2"
       maxThreads: "5"
-      # -- If enabled, you need to provide DB_RO_NAME / DB_RO_USER / DB_RO_PASS / DB_RO_HOST / DB_RO_PORT env vars
+      # -- If enabled, you need to provide these env vars :
+      # DB_RO_NAME
+      # DB_RO_USER
+      # DB_RO_PASS
+      # DB_RO_HOST
+      # DB_RO_PORT
       rwSplit:
         enabled: false
     extraEnv:
-      env: [ ]
+      env: []
     deployment:
       replicas: 2
       autoscaling:
@@ -59,22 +72,22 @@ mastodon:
         maxReplicas: 100
         targetCPUUtilizationPercentage: 80
         # targetMemoryUtilizationPercentage: 80
-      podAnnotations: { }
-      podSecurityContext: { }
-      securityContext: { }
+      podAnnotations: {}
+      podSecurityContext: {}
+      securityContext: {}
       resources:
         limits:
           memory: 1.5Gi
         requests:
           cpu: 500m
           memory: 1Gi
-      nodeSelector: { }
-      tolerations: [ ]
-      affinity: { }
+      nodeSelector: {}
+      tolerations: []
+      affinity: {}
     service:
       type: ClusterIP
       port: 8080
-    additionalMounts: [ ]
+    additionalMounts: []
     #    - volumeMount:
     #        name: pgsql-certificate
     #        mountPath: /etc/ssl/certs/psql.pem
@@ -87,7 +100,7 @@ mastodon:
     settings:
       workers: "1"
     extraEnv:
-      env: [ ]
+      env: []
     deployment:
       replicas: 2
       autoscaling:
@@ -96,22 +109,22 @@ mastodon:
         maxReplicas: 100
         targetCPUUtilizationPercentage: 80
         # targetMemoryUtilizationPercentage: 80
-      podAnnotations: { }
-      podSecurityContext: { }
-      securityContext: { }
+      podAnnotations: {}
+      podSecurityContext: {}
+      securityContext: {}
       resources:
         limits:
           memory: 300Mi
         requests:
           cpu: 50m
           memory: 200Mi
-      nodeSelector: { }
-      tolerations: [ ]
-      affinity: { }
+      nodeSelector: {}
+      tolerations: []
+      affinity: {}
     service:
       type: ClusterIP
       port: 4000
-    additionalMounts: [ ]
+    additionalMounts: []
     #    - volumeMount:
     #        name: pgsql-certificate
     #        mountPath: /etc/ssl/certs/psql.pem
@@ -122,11 +135,11 @@ mastodon:
     #          secretName: example-secret
   sidekiq:
     extraEnv:
-      env: [ ]
-    podAnnotations: { }
-    podSecurityContext: { }
-    securityContext: { }
-    additionalMounts: [ ]
+      env: []
+    podAnnotations: {}
+    podSecurityContext: {}
+    securityContext: {}
+    additionalMounts: []
     #    - volumeMount:
     #        name: pgsql-certificate
     #        mountPath: /etc/ssl/certs/psql.pem
@@ -148,9 +161,9 @@ mastodon:
           pollingInterval: 30
           minReplicaCount: 1
           listLength: 50
-        nodeSelector: { }
-        tolerations: [ ]
-        affinity: { }
+        nodeSelector: {}
+        tolerations: []
+        affinity: {}
         resources:
           limits:
             memory: 1Gi
@@ -165,9 +178,9 @@ mastodon:
         keda:
           enabled: false
           listLength: 50
-        nodeSelector: { }
-        tolerations: [ ]
-        affinity: { }
+        nodeSelector: {}
+        tolerations: []
+        affinity: {}
         resources:
           limits:
             memory: 1Gi
@@ -186,9 +199,9 @@ mastodon:
           pollingInterval: 30
           minReplicaCount: 1
           listLength: 50
-        nodeSelector: { }
-        tolerations: [ ]
-        affinity: { }
+        nodeSelector: {}
+        tolerations: []
+        affinity: {}
         resources:
           limits:
             memory: 1Gi
@@ -207,9 +220,9 @@ mastodon:
           pollingInterval: 30
           minReplicaCount: 1
           listLength: 50
-        nodeSelector: { }
-        tolerations: [ ]
-        affinity: { }
+        nodeSelector: {}
+        tolerations: []
+        affinity: {}
         resources:
           limits:
             memory: 1Gi
@@ -228,9 +241,9 @@ mastodon:
           pollingInterval: 30
           minReplicaCount: 1
           listLength: 50
-        nodeSelector: { }
-        tolerations: [ ]
-        affinity: { }
+        nodeSelector: {}
+        tolerations: []
+        affinity: {}
         resources:
           limits:
             memory: 1Gi
@@ -249,9 +262,9 @@ mastodon:
           listLength: 999999999
           maxReplicaCount: 10
           minReplicaCount: 1
-        nodeSelector: { }
-        tolerations: [ ]
-        affinity: { }
+        nodeSelector: {}
+        tolerations: []
+        affinity: {}
         resources:
           limits:
             memory: 1Gi
@@ -260,11 +273,11 @@ mastodon:
             memory: 500Mi
   cronjobs:
     extraEnv:
-      env: [ ]
-    podAnnotations: { }
-    podSecurityContext: { }
-    securityContext: { }
-    additionalMounts: [ ]
+      env: []
+    podAnnotations: {}
+    podSecurityContext: {}
+    securityContext: {}
+    additionalMounts: []
     #    - volumeMount:
     #        name: pgsql-certificate
     #        mountPath: /etc/ssl/certs/psql.pem
@@ -277,36 +290,37 @@ mastodon:
       - name: media-remove
         command: 'tootctl media remove --days 7 --concurrency 5 --verbose'
         schedule: "0 1 * * *"
-        nodeSelector: { }
-        tolerations: [ ]
-        affinity: { }
-        resources: { }
+        nodeSelector: {}
+        tolerations: []
+        affinity: {}
+        resources: {}
       - name: accounts-cull
         command: 'tootctl accounts cull --concurrency 5'
         schedule: "0 1 * * *"
-        nodeSelector: { }
-        tolerations: [ ]
-        affinity: { }
-        resources: { }
+        nodeSelector: {}
+        tolerations: []
+        affinity: {}
+        resources: {}
       - name: media-remove-orphans
         command: 'tootctl media remove-orphans'
         schedule: "0 1 * * *"
-        nodeSelector: { }
-        tolerations: [ ]
-        affinity: { }
-        resources: { }
+        nodeSelector: {}
+        tolerations: []
+        affinity: {}
+        resources: {}
       - name: preview-cards-remove
-        command: 'tootctl preview_cards remove --days 7 --concurrency 5 --verbose'
+        command: >-
+          tootctl preview_cards remove --days 7 --concurrency 5 --verbose
         schedule: "0 1 * * *"
-        nodeSelector: { }
-        tolerations: [ ]
-        affinity: { }
-        resources: { }
+        nodeSelector: {}
+        tolerations: []
+        affinity: {}
+        resources: {}
 
   extraEnv:
     fromSecret: ''
     fromConfigMap: ''
-    env: [ ]
+    env: []
 
 nginxReverse:
   deployment:
@@ -321,22 +335,22 @@ nginxReverse:
       maxReplicas: 100
       targetCPUUtilizationPercentage: 80
       # targetMemoryUtilizationPercentage: 80
-    podAnnotations: { }
-    podSecurityContext: { }
-    securityContext: { }
+    podAnnotations: {}
+    podSecurityContext: {}
+    securityContext: {}
     resources:
       limits:
         memory: 500Mi
       requests:
         cpu: 30m
         memory: 200Mi
-    nodeSelector: { }
-    tolerations: [ ]
-    affinity: { }
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
   service:
     type: ClusterIP
     port: 8080
-  additionalMounts: [ ]
+  additionalMounts: []
   #    - volumeMount:
   #        name: pgsql-certificate
   #        mountPath: /etc/ssl/certs/psql.pem
@@ -359,22 +373,22 @@ varnishS3:
       maxReplicas: 100
       targetCPUUtilizationPercentage: 80
       # targetMemoryUtilizationPercentage: 80
-    podAnnotations: { }
-    podSecurityContext: { }
-    securityContext: { }
+    podAnnotations: {}
+    podSecurityContext: {}
+    securityContext: {}
     resources:
       limits:
         memory: 600Mi
       requests:
         cpu: 150m
         memory: 400Mi
-    nodeSelector: { }
-    tolerations: [ ]
-    affinity: { }
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
   service:
     type: ClusterIP
     port: 8080
-  additionalMounts: [ ]
+  additionalMounts: []
   #    - volumeMount:
   #        name: pgsql-certificate
   #        mountPath: /etc/ssl/certs/psql.pem
@@ -387,14 +401,14 @@ varnishS3:
 ingress:
   enabled: false
   className: ""
-  annotations: { }
+  annotations: {}
   # kubernetes.io/ingress.class: nginx
   # kubernetes.io/tls-acme: "true"
   hosts:
     - host: chart-example.local
       paths:
         - path: /
-  tls: [ ]
+  tls: []
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
@@ -402,7 +416,7 @@ ingress:
 mediaIngress:
   enabled: false
   className: ""
-  annotations: { }
+  annotations: {}
   # kubernetes.io/ingress.class: nginx
   # kubernetes.io/tls-acme: "true"
   hosts:
@@ -410,7 +424,7 @@ mediaIngress:
       paths:
         - path: /
           pathType: ImplementationSpecific
-  tls: [ ]
+  tls: []
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
@@ -426,4 +440,3 @@ redis:
       enabled: false
   replica:
     replicaCount: 0
-
