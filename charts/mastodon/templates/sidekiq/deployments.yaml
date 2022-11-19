@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "mastodon.labels" $ | nindent 4 }}
 spec:
-  {{- if eq .autoscaling.enabled false }}
+  {{- if eq .keda.enabled false }}
   replicas: {{ .replicas }}
   {{- end }}
   revisionHistoryLimit: 3

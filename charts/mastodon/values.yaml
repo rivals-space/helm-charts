@@ -137,16 +137,17 @@ mastodon:
     #          secretName: example-secret
     workers:
       - name: default
-        concurrency: 10
+        concurrency: 1
         queues:
           - default
-        replicas: 2
-        autoscaling:
+        replicas: 1
+        keda:
           enabled: false
-          minReplicas: 1
-          maxReplicas: 100
-          targetCPUUtilizationPercentage: 80
-          # targetMemoryUtilizationPercentage: 80
+          cooldownPeriod: 300
+          maxReplicaCount: 10
+          pollingInterval: 30
+          minReplicaCount: 1
+          listLength: 50
         nodeSelector: { }
         tolerations: [ ]
         affinity: { }
@@ -159,14 +160,11 @@ mastodon:
       - name: ingress
         queues:
           - ingress
-        concurrency: 5
-        replicas: 2
-        autoscaling:
+        concurrency: 1
+        replicas: 1
+        keda:
           enabled: false
-          minReplicas: 1
-          maxReplicas: 100
-          targetCPUUtilizationPercentage: 80
-          # targetMemoryUtilizationPercentage: 80
+          listLength: 50
         nodeSelector: { }
         tolerations: [ ]
         affinity: { }
@@ -181,12 +179,13 @@ mastodon:
         queues:
           - mailers
         replicas: 1
-        autoscaling:
+        keda:
           enabled: false
-          minReplicas: 1
-          maxReplicas: 100
-          targetCPUUtilizationPercentage: 80
-          # targetMemoryUtilizationPercentage: 80
+          cooldownPeriod: 300
+          maxReplicaCount: 10
+          pollingInterval: 30
+          minReplicaCount: 1
+          listLength: 50
         nodeSelector: { }
         tolerations: [ ]
         affinity: { }
@@ -197,16 +196,17 @@ mastodon:
             cpu: 200m
             memory: 500Mi
       - name: pull
-        concurrency: 5
+        concurrency: 1
         queues:
           - pull
-        replicas: 2
-        autoscaling:
+        replicas: 1
+        keda:
           enabled: false
-          minReplicas: 1
-          maxReplicas: 100
-          targetCPUUtilizationPercentage: 80
-          # targetMemoryUtilizationPercentage: 80
+          cooldownPeriod: 300
+          maxReplicaCount: 10
+          pollingInterval: 30
+          minReplicaCount: 1
+          listLength: 50
         nodeSelector: { }
         tolerations: [ ]
         affinity: { }
@@ -217,16 +217,17 @@ mastodon:
             cpu: 200m
             memory: 500Mi
       - name: push
-        concurrency: 10
+        concurrency: 1
         queues:
           - push
-        replicas: 2
-        autoscaling:
+        replicas: 1
+        keda:
           enabled: false
-          minReplicas: 1
-          maxReplicas: 100
-          targetCPUUtilizationPercentage: 80
-          # targetMemoryUtilizationPercentage: 80
+          cooldownPeriod: 300
+          maxReplicaCount: 10
+          pollingInterval: 30
+          minReplicaCount: 1
+          listLength: 50
         nodeSelector: { }
         tolerations: [ ]
         affinity: { }
@@ -239,12 +240,15 @@ mastodon:
       - name: scheduler
         queues:
           - scheduler
-        concurrency: 3
+        concurrency: 5
         # leave scheduler to 1 replica
         replicas: 1
-        # never enable autoscaling on scheduler
-        autoscaling:
+        # never enable keda on scheduler
+        keda:
           enabled: false
+          listLength: 999999999
+          maxReplicaCount: 10
+          minReplicaCount: 1
         nodeSelector: { }
         tolerations: [ ]
         affinity: { }

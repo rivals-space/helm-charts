@@ -1,0 +1,29 @@
+{{- range .Values.mastodon.sidekiq.workers }}
+{{- if .keda.enabled }}
+{{ $sidekiq := . }}
+{{- range .queues }}
+{{- if eq . "scheduler" }}
+{{ fail "You should not scale the scheduler" }}
+{{- end }}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ include "mastodon.fullname" $ }}-sidekiq-{{ $sidekiq.name }}
+  namespace: mastodon
+spec:
+  cooldownPeriod: {{ $sidekiq.keda.cooldownPeriod }}
+  maxReplicaCount: {{ $sidekiq.keda.maxReplicaCount }}
+  minReplicaCount: {{ $sidekiq.keda.minReplicaCount }}
+  pollingInterval: {{ $sidekiq.keda.pollingInterval }}
+  scaleTargetRef:
+    name: mastodon-sidekiq-default
+  triggers:
+    - metadata:
+        address: {{ printf "%s-redis-headless.svc.cluster.local:%v" $.Release.Name $.Values.redis.master.service.ports.redis | quote }}
+        listLength: {{ $sidekiq.keda.listLength }}
+        listName: "queue:{{ . }}"
+      type: redis
+---
+{{- end }}
+{{- end }}
+{{- end }}
