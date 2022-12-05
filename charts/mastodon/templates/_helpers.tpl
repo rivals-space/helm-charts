@@ -69,7 +69,3 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- define "mastodon.selectorLabels.nginxS3" -}}
 {{ .Release.Name }}/component: nginx-s3
 {{- end }}
-
-{{- define "mastodon.selectorLabels.varnishS3" -}}
-{{ .Release.Name }}/component: varnish-s3
-{{- end }}
