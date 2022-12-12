@@ -286,36 +286,22 @@ mastodon:
     #        name: pgsql-certificate
     #        secret:
     #          secretName: example-secret
-    tasks:
-      - name: media-remove
-        command: 'tootctl media remove --days 7 --concurrency 5 --verbose'
-        schedule: "0 1 * * *"
-        nodeSelector: {}
-        tolerations: []
-        affinity: {}
-        resources: {}
-      - name: accounts-cull
-        command: 'tootctl accounts cull --concurrency 5'
-        schedule: "0 1 * * *"
-        nodeSelector: {}
-        tolerations: []
-        affinity: {}
-        resources: {}
-      - name: media-remove-orphans
-        command: 'tootctl media remove-orphans'
-        schedule: "0 1 * * *"
-        nodeSelector: {}
-        tolerations: []
-        affinity: {}
-        resources: {}
-      - name: preview-cards-remove
-        command: >-
-          tootctl preview_cards remove --days 7 --concurrency 5 --verbose
-        schedule: "0 1 * * *"
-        nodeSelector: {}
-        tolerations: []
-        affinity: {}
-        resources: {}
+    tasks: []
+#      - name: media-remove
+#        command: 'tootctl media remove --days 7 --concurrency 5 --verbose'
+#        schedule: "0 1 * * *"
+#        nodeSelector: {}
+#        tolerations: []
+#        affinity: {}
+#        resources: {}
+#      - name: preview-cards-remove
+#        command: >-
+#          tootctl preview_cards remove --days 7 --concurrency 5 --verbose
+#        schedule: "0 1 * * *"
+#        nodeSelector: {}
+#        tolerations: []
+#        affinity: {}
+#        resources: {}
 
   extraEnv:
     fromSecret: ''
