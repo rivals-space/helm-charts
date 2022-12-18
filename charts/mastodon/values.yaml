@@ -308,6 +308,12 @@ mastodon:
     fromConfigMap: ''
     env: []
 
+keda:
+  # If not using the embed redis server, add host & port here
+  redis:
+    host: ""
+    port: "6379"
+
 nginxReverse:
   deployment:
     image:
