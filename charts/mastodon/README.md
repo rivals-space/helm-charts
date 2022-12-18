@@ -1,6 +1,6 @@
 # mastodon
 
-![Version: 2.0.0](https://img.shields.io/badge/Version-2.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.0.2](https://img.shields.io/badge/AppVersion-v4.0.2-informational?style=flat-square)
+![Version: 2.1.1](https://img.shields.io/badge/Version-2.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.0.2](https://img.shields.io/badge/AppVersion-v4.0.2-informational?style=flat-square)
 
 Rivals.space Mastodon helm chart
 
@@ -28,39 +28,14 @@ Rivals.space Mastodon helm chart
 | ingress.hosts[0].host | string | `"chart-example.local"` |  |
 | ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | ingress.tls | list | `[]` |  |
+| keda.redis.host | string | `""` |  |
+| keda.redis.port | string | `"6379"` |  |
 | mastodon.cronjobs.additionalMounts | list | `[]` |  |
 | mastodon.cronjobs.extraEnv.env | list | `[]` |  |
 | mastodon.cronjobs.podAnnotations | object | `{}` |  |
 | mastodon.cronjobs.podSecurityContext | object | `{}` |  |
 | mastodon.cronjobs.securityContext | object | `{}` |  |
-| mastodon.cronjobs.tasks[0].affinity | object | `{}` |  |
-| mastodon.cronjobs.tasks[0].command | string | `"tootctl media remove --days 7 --concurrency 5 --verbose"` |  |
-| mastodon.cronjobs.tasks[0].name | string | `"media-remove"` |  |
-| mastodon.cronjobs.tasks[0].nodeSelector | object | `{}` |  |
-| mastodon.cronjobs.tasks[0].resources | object | `{}` |  |
-| mastodon.cronjobs.tasks[0].schedule | string | `"0 1 * * *"` |  |
-| mastodon.cronjobs.tasks[0].tolerations | list | `[]` |  |
-| mastodon.cronjobs.tasks[1].affinity | object | `{}` |  |
-| mastodon.cronjobs.tasks[1].command | string | `"tootctl accounts cull --concurrency 5"` |  |
-| mastodon.cronjobs.tasks[1].name | string | `"accounts-cull"` |  |
-| mastodon.cronjobs.tasks[1].nodeSelector | object | `{}` |  |
-| mastodon.cronjobs.tasks[1].resources | object | `{}` |  |
-| mastodon.cronjobs.tasks[1].schedule | string | `"0 1 * * *"` |  |
-| mastodon.cronjobs.tasks[1].tolerations | list | `[]` |  |
-| mastodon.cronjobs.tasks[2].affinity | object | `{}` |  |
-| mastodon.cronjobs.tasks[2].command | string | `"tootctl media remove-orphans"` |  |
-| mastodon.cronjobs.tasks[2].name | string | `"media-remove-orphans"` |  |
-| mastodon.cronjobs.tasks[2].nodeSelector | object | `{}` |  |
-| mastodon.cronjobs.tasks[2].resources | object | `{}` |  |
-| mastodon.cronjobs.tasks[2].schedule | string | `"0 1 * * *"` |  |
-| mastodon.cronjobs.tasks[2].tolerations | list | `[]` |  |
-| mastodon.cronjobs.tasks[3].affinity | object | `{}` |  |
-| mastodon.cronjobs.tasks[3].command | string | `"tootctl preview_cards remove --days 7 --concurrency 5 --verbose"` |  |
-| mastodon.cronjobs.tasks[3].name | string | `"preview-cards-remove"` |  |
-| mastodon.cronjobs.tasks[3].nodeSelector | object | `{}` |  |
-| mastodon.cronjobs.tasks[3].resources | object | `{}` |  |
-| mastodon.cronjobs.tasks[3].schedule | string | `"0 1 * * *"` |  |
-| mastodon.cronjobs.tasks[3].tolerations | list | `[]` |  |
+| mastodon.cronjobs.tasks | list | `[]` |  |
 | mastodon.extraEnv.env | list | `[]` |  |
 | mastodon.extraEnv.fromConfigMap | string | `""` |  |
 | mastodon.extraEnv.fromSecret | string | `""` |  |

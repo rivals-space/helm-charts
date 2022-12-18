@@ -20,7 +20,11 @@ spec:
     name: {{ include "mastodon.fullname" $ }}-sidekiq-{{ $sidekiq.name }}
   triggers:
     - metadata:
+        {{ if $.Values.redis.enabled }}
         address: {{ printf "%s-redis-headless.%s.svc.cluster.local:%v" $.Release.Name $.Release.Namespace $.Values.redis.master.service.ports.redis | quote }}
+        {{ else }}
+        address: {{ printf "%s:%v" $.Values.keda.redis.host $.Values.keda.redis.port | quote }}
+        {{ end }}
         listLength: {{ $sidekiq.keda.listLength | quote }}
         listName: "queue:{{ . }}"
       type: redis
