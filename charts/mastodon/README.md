@@ -1,6 +1,6 @@
 # mastodon
 
-![Version: 1.2.7](https://img.shields.io/badge/Version-1.2.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.0.2](https://img.shields.io/badge/AppVersion-v4.0.2-informational?style=flat-square)
+![Version: 2.1.1](https://img.shields.io/badge/Version-2.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.0.2](https://img.shields.io/badge/AppVersion-v4.0.2-informational?style=flat-square)
 
 Rivals.space Mastodon helm chart
 
@@ -35,34 +35,7 @@ Rivals.space Mastodon helm chart
 | mastodon.cronjobs.podAnnotations | object | `{}` |  |
 | mastodon.cronjobs.podSecurityContext | object | `{}` |  |
 | mastodon.cronjobs.securityContext | object | `{}` |  |
-| mastodon.cronjobs.tasks[0].affinity | object | `{}` |  |
-| mastodon.cronjobs.tasks[0].command | string | `"tootctl media remove --days 7 --concurrency 5 --verbose"` |  |
-| mastodon.cronjobs.tasks[0].name | string | `"media-remove"` |  |
-| mastodon.cronjobs.tasks[0].nodeSelector | object | `{}` |  |
-| mastodon.cronjobs.tasks[0].resources | object | `{}` |  |
-| mastodon.cronjobs.tasks[0].schedule | string | `"0 1 * * *"` |  |
-| mastodon.cronjobs.tasks[0].tolerations | list | `[]` |  |
-| mastodon.cronjobs.tasks[1].affinity | object | `{}` |  |
-| mastodon.cronjobs.tasks[1].command | string | `"tootctl accounts cull --concurrency 5"` |  |
-| mastodon.cronjobs.tasks[1].name | string | `"accounts-cull"` |  |
-| mastodon.cronjobs.tasks[1].nodeSelector | object | `{}` |  |
-| mastodon.cronjobs.tasks[1].resources | object | `{}` |  |
-| mastodon.cronjobs.tasks[1].schedule | string | `"0 1 * * *"` |  |
-| mastodon.cronjobs.tasks[1].tolerations | list | `[]` |  |
-| mastodon.cronjobs.tasks[2].affinity | object | `{}` |  |
-| mastodon.cronjobs.tasks[2].command | string | `"tootctl media remove-orphans"` |  |
-| mastodon.cronjobs.tasks[2].name | string | `"media-remove-orphans"` |  |
-| mastodon.cronjobs.tasks[2].nodeSelector | object | `{}` |  |
-| mastodon.cronjobs.tasks[2].resources | object | `{}` |  |
-| mastodon.cronjobs.tasks[2].schedule | string | `"0 1 * * *"` |  |
-| mastodon.cronjobs.tasks[2].tolerations | list | `[]` |  |
-| mastodon.cronjobs.tasks[3].affinity | object | `{}` |  |
-| mastodon.cronjobs.tasks[3].command | string | `"tootctl preview_cards remove --days 7 --concurrency 5 --verbose"` |  |
-| mastodon.cronjobs.tasks[3].name | string | `"preview-cards-remove"` |  |
-| mastodon.cronjobs.tasks[3].nodeSelector | object | `{}` |  |
-| mastodon.cronjobs.tasks[3].resources | object | `{}` |  |
-| mastodon.cronjobs.tasks[3].schedule | string | `"0 1 * * *"` |  |
-| mastodon.cronjobs.tasks[3].tolerations | list | `[]` |  |
+| mastodon.cronjobs.tasks | list | `[]` |  |
 | mastodon.extraEnv.env | list | `[]` |  |
 | mastodon.extraEnv.fromConfigMap | string | `""` |  |
 | mastodon.extraEnv.fromSecret | string | `""` |  |
@@ -228,13 +201,6 @@ Rivals.space Mastodon helm chart
 | mastodon.web.settings.concurrency | string | `"2"` |  |
 | mastodon.web.settings.maxThreads | string | `"5"` |  |
 | mastodon.web.settings.rwSplit | object | `{"enabled":false}` | If enabled, you need to provide these env vars : DB_RO_NAME DB_RO_USER DB_RO_PASS DB_RO_HOST DB_RO_PORT |
-| mediaIngress.annotations | object | `{}` |  |
-| mediaIngress.className | string | `""` |  |
-| mediaIngress.enabled | bool | `false` |  |
-| mediaIngress.hosts[0].host | string | `"chart-example.local"` |  |
-| mediaIngress.hosts[0].paths[0].path | string | `"/"` |  |
-| mediaIngress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
-| mediaIngress.tls | list | `[]` |  |
 | nameOverride | string | `""` |  |
 | nginxReverse.additionalMounts | list | `[]` |  |
 | nginxReverse.deployment.affinity | object | `{}` |  |
@@ -262,26 +228,6 @@ Rivals.space Mastodon helm chart
 | redis.enabled | bool | `true` |  |
 | redis.master.persistence.enabled | bool | `false` |  |
 | redis.replica.replicaCount | int | `0` |  |
-| varnishS3.additionalMounts | list | `[]` |  |
-| varnishS3.deployment.affinity | object | `{}` |  |
-| varnishS3.deployment.autoscaling.enabled | bool | `false` |  |
-| varnishS3.deployment.autoscaling.maxReplicas | int | `100` |  |
-| varnishS3.deployment.autoscaling.minReplicas | int | `1` |  |
-| varnishS3.deployment.autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
-| varnishS3.deployment.image.pullPolicy | string | `"IfNotPresent"` |  |
-| varnishS3.deployment.image.repository | string | `"varnish"` |  |
-| varnishS3.deployment.image.tag | string | `"fresh-alpine"` |  |
-| varnishS3.deployment.nodeSelector | object | `{}` |  |
-| varnishS3.deployment.podAnnotations | object | `{}` |  |
-| varnishS3.deployment.podSecurityContext | object | `{}` |  |
-| varnishS3.deployment.replicas | int | `2` |  |
-| varnishS3.deployment.resources.limits.memory | string | `"600Mi"` |  |
-| varnishS3.deployment.resources.requests.cpu | string | `"150m"` |  |
-| varnishS3.deployment.resources.requests.memory | string | `"400Mi"` |  |
-| varnishS3.deployment.securityContext | object | `{}` |  |
-| varnishS3.deployment.tolerations | list | `[]` |  |
-| varnishS3.service.port | int | `8080` |  |
-| varnishS3.service.type | string | `"ClusterIP"` |  |
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.11.0](https://github.com/norwoodj/helm-docs/releases/v1.11.0)
