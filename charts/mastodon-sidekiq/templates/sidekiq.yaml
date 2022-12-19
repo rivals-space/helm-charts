@@ -1,0 +1,79 @@
+{{- range .Values.workers }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mastodon-sidekiq.fullname" $ }}
+  labels:
+    {{- include "mastodon-sidekiq.labels" $ | nindent 4 }}
+spec:
+  {{- if eq .keda.enabled false }}
+  replicas: {{ .replicas }}
+  {{- end }}
+  revisionHistoryLimit: 3
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "mastodon-sidekiq.selectorLabels.global" $ | nindent 6 }}
+      {{- include "mastodon-sidekiq.selectorLabels.sidekiq" $ | nindent 6 }}
+  template:
+    metadata:
+      {{- with $.Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "mastodon-sidekiq.selectorLabels.global" $ | nindent 8 }}
+        {{- include "mastodon-sidekiq.selectorLabels.sidekiq" $ | nindent 8 }}
+    spec:
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: sidekiq-{{ .name }}
+          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          command:
+            - "/usr/bin/env"
+            - "bash"
+            - "-c"
+            - >-
+              bundle exec sidekiq -c {{ .concurrency }} {{ range .queues }} -q {{ . }} {{ end }}
+          env:
+          {{- with $.Values.extraEnv.env }}
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          securityContext:
+            {{- toYaml $.Values.securityContext | nindent 12 }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "mastodon-sidekiq.fullname" $ }}-env
+            - secretRef:
+                name: {{ include "mastodon-sidekiq.fullname" $ }}-env
+            {{- if $.Values.extraEnv.fromConfigMap }}
+            - configMapRef:
+                name: {{ $.Values.extraEnv.fromConfigMap }}
+            {{- end }}
+            {{- if $.Values.extraEnv.fromSecret }}
+            - secretRef:
+                name: {{ $.Values.extraEnv.fromSecret }}
+            {{- end }}
+          resources:
+            {{- toYaml .resources | nindent 12 }}
+      {{- with .nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+---
+{{- end }}
