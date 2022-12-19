@@ -1,0 +1,147 @@
+# Default values for mastodon-sidekiq.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: "tootsuite/mastodon"
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+keda:
+  enabled: true
+
+redis:
+  host: ""
+  port: "5379"
+
+workers:
+  - name: default
+    concurrency: 1
+    queues:
+      - default
+    replicas: 1
+    keda:
+      enabled: false
+      cooldownPeriod: 300
+      maxReplicaCount: 10
+      pollingInterval: 30
+      minReplicaCount: 1
+      listLength: 50
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    resources:
+      limits:
+        memory: 1Gi
+      requests:
+        cpu: 200m
+        memory: 500Mi
+  - name: ingress
+    queues:
+      - ingress
+    concurrency: 1
+    replicas: 1
+    keda:
+      enabled: false
+      listLength: 50
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    resources:
+      limits:
+        memory: 1Gi
+      requests:
+        cpu: 200m
+        memory: 500Mi
+  - name: mailers
+    concurrency: 1
+    queues:
+      - mailers
+    replicas: 1
+    keda:
+      enabled: false
+      cooldownPeriod: 300
+      maxReplicaCount: 10
+      pollingInterval: 30
+      minReplicaCount: 1
+      listLength: 50
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    resources:
+      limits:
+        memory: 1Gi
+      requests:
+        cpu: 200m
+        memory: 500Mi
+  - name: pull
+    concurrency: 1
+    queues:
+      - pull
+    replicas: 1
+    keda:
+      enabled: false
+      cooldownPeriod: 300
+      maxReplicaCount: 10
+      pollingInterval: 30
+      minReplicaCount: 1
+      listLength: 50
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    resources:
+      limits:
+        memory: 1Gi
+      requests:
+        cpu: 200m
+        memory: 500Mi
+  - name: push
+    concurrency: 1
+    queues:
+      - push
+    replicas: 1
+    keda:
+      enabled: false
+      cooldownPeriod: 300
+      maxReplicaCount: 10
+      pollingInterval: 30
+      minReplicaCount: 1
+      listLength: 50
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    resources:
+      limits:
+        memory: 1Gi
+      requests:
+        cpu: 200m
+        memory: 500Mi
+
+
+extraEnv:
+  fromSecret: ''
+  fromConfigMap: ''
+  env: []
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
