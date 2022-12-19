@@ -139,9 +139,3 @@ securityContext: {}
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
