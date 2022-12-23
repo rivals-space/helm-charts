@@ -31,6 +31,12 @@ pixelfed:
     env: "production"
     debug: "false"
 
+  keys:
+    public: |
+      # add a public key
+    private: |
+      # add a private key
+
   database:
     connection: pgsql
     host: ""

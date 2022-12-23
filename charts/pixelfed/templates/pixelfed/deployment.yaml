@@ -68,12 +68,21 @@ spec:
             - name: fpm-config
               mountPath: /usr/local/etc/php/conf.d/custom.ini
               subPath: custom.ini
+            - name: pixelfed-keys
+              mountPath: /srv/app/storage/oauth-public.key
+              subPath: oauth-public.key
+            - name: pixelfed-keys
+              mountPath: /srv/app/storage/oauth-private.key
+              subPath: oauth-private.key
           resources:
             {{- toYaml .Values.pixelfed.resources | nindent 12 }}
       volumes:
         - name: fpm-config
           configMap:
             name: {{ include "pixelfed.fullname" . }}-php-config
+        - name: pixelfed-keys
+          secret:
+            secretName: {{ include "pixelfed.fullname" . }}-keys
       {{- with .Values.pixelfed.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
