@@ -1,0 +1,7 @@
+include:
+  - project: 'EffectiveSloth/ci-templates'
+    ref: main
+    file: '/CHARTS.gitlab-ci.yaml'
+
+variables:
+  ENABLE_KUBE_LINTER: 'false'

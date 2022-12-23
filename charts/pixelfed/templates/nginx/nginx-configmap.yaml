@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pixelfed.fullname" . }}-nginx-config
+  labels:
+    {{- include "pixelfed.labels" . | nindent 4 }}
+    app.kubernetes.io/component: nginx
+data:
+  default.conf: |
+    # nginx config
+    server {
+        listen 8080;
+        root /srv/app/public;
+
+        add_header X-Frame-Options "SAMEORIGIN";
+        add_header X-XSS-Protection "1; mode=block";
+        add_header X-Content-Type-Options "nosniff";
+
+        index index.html index.htm index.php;
+        charset utf-8;
+        client_max_body_size 15M;
+
+        location / {
+            try_files $uri $uri/ /index.php?$query_string;
+        }
+
+        location = /favicon.ico { access_log off; log_not_found off; }
+        location = /robots.txt  { access_log off; log_not_found off; }
+
+        location ~ ^/index\.php(/|$) {
+            fastcgi_pass {{ include "pixelfed.fullname" . }}-fpm:{{ .Values.pixelfed.service.port }};
+            fastcgi_split_path_info ^(.+\.php)(/.*)$;
+            include fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+            fastcgi_param DOCUMENT_ROOT $realpath_root;
+            fastcgi_param REMOTE_ADDR $http_x_real_ip;
+            internal;
+        }
+
+        location ~ \.php$ {
+            return 404;
+        }
+
+        location ~ /\.(?!well-known).* {
+            deny all;
+        }
+    }
+    server {
+        listen 8081;
+
+        location /nginx-health {
+            access_log off;
+            default_type text/plain;
+            return 200 "healthy\n";
+        }
+    }

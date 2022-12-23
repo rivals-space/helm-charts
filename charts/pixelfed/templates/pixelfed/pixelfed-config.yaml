@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pixelfed.fullname" . }}-pixelfed-config
+  labels:
+    {{- include "pixelfed.labels" . | nindent 4 }}
+data:
+  APP_NAME: {{ .Values.pixelfed.appConfig.appName | quote }}
+  APP_ENV: {{ .Values.pixelfed.appConfig.env | quote }}
+  APP_KEY: {{ .Values.pixelfed.appConfig.appKey | required "Missing appkey" }}
+  APP_DEBUG: {{ .Values.pixelfed.appConfig.debug | quote }}
+  OPEN_REGISTRATION:  {{ .Values.pixelfed.appConfig.openRegistration | quote }}
+  ENABLE_CONFIG_CACHE: "false"
+  APP_URL: "https://{{ .Values.pixelfed.appConfig.domain }}"
+  APP_DOMAIN: {{ .Values.pixelfed.appConfig.domain | quote }}
+  ADMIN_DOMAIN: {{ .Values.pixelfed.appConfig.adminDomain | quote }}
+  SESSION_DOMAIN: {{ .Values.pixelfed.appConfig.sessionDomain | quote }}
+  CUSTOM_EMOJI: {{ .Values.pixelfed.appConfig.customEmoji | quote }}
+  # redis
+  REDIS_CLIENT: "predis"
+  REDIS_SCHEME: "tcp"
+  REDIS_HOST: {{ printf "%s-redis-master" ( .Release.Name ) }}.{{ .Release.Namespace }}.svc.cluster.local
+  REDIS_PORT: {{ .Values.redis.master.service.ports.redis | quote }}

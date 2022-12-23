@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "pixelfed.fullname" . }}-keys
+  labels:
+    {{- include "pixelfed.labels" . | nindent 4 }}
+stringData:
+  oauth-private.key: |
+    {{ .Values.pixelfed.keys.private }}
+  oauth-public.key: |
+    {{ .Values.pixelfed.keys.public }}

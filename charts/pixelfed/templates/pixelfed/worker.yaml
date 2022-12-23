@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pixelfed.fullname" . }}-worker
+  labels:
+    {{- include "pixelfed.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.pixelfed.autoscaling.enabled }}
+  replicas: {{ .Values.pixelfed.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "pixelfed.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.pixelfed.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "pixelfed.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.pixelfed.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-worker
+          securityContext:
+            {{- toYaml .Values.pixelfed.securityContext | nindent 12 }}
+          image: "{{ .Values.pixelfed.image.repository }}:{{ .Values.pixelfed.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.pixelfed.image.pullPolicy }}
+          command: ['sh', '-c']
+          args:
+            - |
+              php artisan queue:work
+          env:
+            {{- with .Values.pixelfed.extraEnv.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "pixelfed.fullname" . }}-pixelfed-config
+            {{- if .Values.pixelfed.extraEnv.fromConfigMap }}
+            - configMapRef:
+                name: {{ .Values.pixelfed.extraEnv.fromConfigMap }}
+            {{- end }}
+            {{ if .Values.pixelfed.extraEnv.fromSecret }}
+            - secretRef:
+                name: {{ .Values.pixelfed.extraEnv.fromSecret }}
+            {{- end }}
+          volumeMounts:
+            - name: fpm-config
+              mountPath: /usr/local/etc/php/conf.d/custom.ini
+              subPath: custom.ini
+          resources:
+            {{- toYaml .Values.pixelfed.resources | nindent 12 }}
+      volumes:
+        - name: fpm-config
+          configMap:
+            name: {{ include "pixelfed.fullname" . }}-php-config
+      {{- with .Values.pixelfed.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pixelfed.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pixelfed.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

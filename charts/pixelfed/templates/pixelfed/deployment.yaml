@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pixelfed.fullname" . }}
+  labels:
+    {{- include "pixelfed.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.pixelfed.autoscaling.enabled }}
+  replicas: {{ .Values.pixelfed.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "pixelfed.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.pixelfed.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "pixelfed.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.pixelfed.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.pixelfed.securityContext | nindent 12 }}
+          image: "{{ .Values.pixelfed.image.repository }}:{{ .Values.pixelfed.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.pixelfed.image.pullPolicy }}
+          env:
+            {{- with .Values.pixelfed.extraEnv.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "pixelfed.fullname" . }}-pixelfed-config
+            {{- if .Values.pixelfed.extraEnv.fromConfigMap }}
+            - configMapRef:
+                name: {{ .Values.pixelfed.extraEnv.fromConfigMap }}
+            {{- end }}
+            {{ if .Values.pixelfed.extraEnv.fromSecret }}
+            - secretRef:
+                name: {{ .Values.pixelfed.extraEnv.fromSecret }}
+            {{- end }}
+          ports:
+            - name: fpm
+              containerPort: 9000
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+                - php-fpm-healthcheck
+                - --listen-queue=10
+            initialDelaySeconds: 0
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - php-fpm-healthcheck
+            initialDelaySeconds: 1
+            periodSeconds: 5
+          volumeMounts:
+            - name: fpm-config
+              mountPath: /usr/local/etc/php/conf.d/custom.ini
+              subPath: custom.ini
+            - name: pixelfed-keys
+              mountPath: /srv/app/storage/oauth-public.key
+              subPath: oauth-public.key
+            - name: pixelfed-keys
+              mountPath: /srv/app/storage/oauth-private.key
+              subPath: oauth-private.key
+          resources:
+            {{- toYaml .Values.pixelfed.resources | nindent 12 }}
+      volumes:
+        - name: fpm-config
+          configMap:
+            name: {{ include "pixelfed.fullname" . }}-php-config
+        - name: pixelfed-keys
+          secret:
+            {{- if .Values.pixelfed.keys.fromSecret }}
+            secretName: {{ .Values.pixelfed.keys.fromSecret }}
+            {{- else }}
+            secretName: {{ include "pixelfed.fullname" . }}-keys
+            {{- end }}
+      {{- with .Values.pixelfed.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pixelfed.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pixelfed.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
