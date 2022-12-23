@@ -39,6 +39,14 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "pixelfed.fullname" . }}-pixelfed-config
+            {{- if .Values.pixelfed.extraEnv.fromConfigMap }}
+            - configMapRef:
+                name: {{ .Values.pixelfed.extraEnv.fromConfigMap }}
+            {{- end }}
+            {{ if .Values.pixelfed.extraEnv.fromSecret }}
+            - secretRef:
+                name: {{ .Values.pixelfed.extraEnv.fromSecret }}
+            {{- end }}
           ports:
             - name: fpm
               containerPort: 9000
