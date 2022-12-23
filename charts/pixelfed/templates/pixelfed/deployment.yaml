@@ -82,7 +82,11 @@ spec:
             name: {{ include "pixelfed.fullname" . }}-php-config
         - name: pixelfed-keys
           secret:
+            {{- if .Values.pixelfed.keys.fromSecret }}
+            secretName: {{ .Values.pixelfed.keys.fromSecret }}
+            {{- else }}
             secretName: {{ include "pixelfed.fullname" . }}-keys
+            {{- end }}
       {{- with .Values.pixelfed.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

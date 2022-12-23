@@ -32,6 +32,7 @@ pixelfed:
     debug: "false"
 
   keys:
+    fromSecret: ""
     public: |
       # add a public key
     private: |
