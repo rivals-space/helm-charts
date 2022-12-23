@@ -1,0 +1,28 @@
+{{- if .Values.pixelfed.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "pixelfed.fullname" . }}
+  labels:
+    {{- include "pixelfed.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "pixelfed.fullname" . }}
+  minReplicas: {{ .Values.pixelfed.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.pixelfed.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.pixelfed.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.pixelfed.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.pixelfed.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.pixelfed.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}
