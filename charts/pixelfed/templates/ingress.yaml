@@ -38,7 +38,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ include "pixelfed.fullname" $ }}-nginx-reverse
+                name: {{ include "pixelfed.fullname" $ }}-nginx
                 port:
                   number: {{ $.Values.nginx.service.port }}
           {{- end }}
