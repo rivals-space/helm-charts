@@ -55,14 +55,6 @@ spec:
         - name: http
           containerPort: 3000
           protocol: TCP
-      livenessProbe:
-        httpGet:
-          path: /health
-          port: http
-      readinessProbe:
-        httpGet:
-          path: /health
-          port: http
       resources:
           {{- toYaml .Values.mastodon.toolbox.deployment.resources | nindent 12 }}
   volumes:
