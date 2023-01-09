@@ -271,6 +271,27 @@ mastodon:
           requests:
             cpu: 200m
             memory: 500Mi
+  toolbox:
+    enabled: false
+    extraEnv:
+      env: []
+    deployment:
+      podAnnotations: {}
+      podSecurityContext: {}
+      securityContext: {}
+      resources: {}
+      nodeSelector: {}
+      tolerations: []
+      affinity: {}
+    additionalMounts: []
+    #    - volumeMount:
+    #        name: pgsql-certificate
+    #        mountPath: /etc/ssl/certs/psql.pem
+    #        subPath: ca.crt
+    #      volume:
+    #        name: pgsql-certificate
+    #        secret:
+    #          secretName: example-secret
   cronjobs:
     extraEnv:
       env: []

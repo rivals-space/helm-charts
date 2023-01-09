@@ -54,6 +54,10 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{ .Release.Name }}/component: web
 {{- end }}
 
+{{- define "mastodon.selectorLabels.toolbox" -}}
+{{ .Release.Name }}/component: toolbox
+{{- end }}
+
 {{- define "mastodon.selectorLabels.streaming" -}}
 {{ .Release.Name }}/component: streaming
 {{- end }}
