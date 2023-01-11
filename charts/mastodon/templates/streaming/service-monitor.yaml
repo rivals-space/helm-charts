@@ -8,9 +8,9 @@ metadata:
   namespace: {{ .Values.mastodon.streaming.deployment.prometheusJsonExporterSidecar.serviceMonitor.namespace }}
 spec:
   endpoints:
-    - interval: 30s
-      path: /metrics
-      port: http
+    - interval: 10s
+      path: /probe?module=default&target=http://localhost:4000/status
+      port: metrics
       scrapeTimeout: 10s
   namespaceSelector:
     matchNames:
