@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.0]
+### Added
+- streaming pod keda autoscaling
+
 ## [2.3.2]
 ### Fixed
 - servicemonitor path params

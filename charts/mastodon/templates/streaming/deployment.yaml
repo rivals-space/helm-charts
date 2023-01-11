@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "mastodon.labels" . | nindent 4 }}
 spec:
-  {{- if eq .Values.mastodon.streaming.deployment.autoscaling.enabled false}}
+  {{- if eq .Values.mastodon.streaming.keda.enabled false}}
   replicas: {{ .Values.mastodon.streaming.deployment.replicas }}
   {{- end }}
   revisionHistoryLimit: 3
