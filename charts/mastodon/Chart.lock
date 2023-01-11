@@ -1,6 +1,9 @@
 dependencies:
+- name: keda
+  repository: https://charts.softonic.io
+  version: 2.8.2
 - name: redis
   repository: https://charts.bitnami.com/bitnami
   version: 17.3.11
-digest: sha256:d787f7f3593da8c1c3522e2dcf8900f3e8bc640c4f09b03b85ba347b8576d2a0
-generated: "2023-01-11T18:10:38.400665546+01:00"
+digest: sha256:9845c785a3312cd469cc35dc5fb0110b0cba352a4ce986b9237a7fd930e92355
+generated: "2023-01-11T20:08:01.239721785+01:00"
