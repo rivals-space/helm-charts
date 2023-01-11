@@ -1,0 +1,17 @@
+{{- if .Values.mastodon.streaming.deployment.prometheusJsonExporterSidecar.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "mastodon.fullname" . }}-streaming-json-exporter-config
+  labels:
+    {{- include "mastodon.labels" . | nindent 4 }}
+data:
+  config.yml: |
+    modules:
+      default:
+        metrics:
+          - name: connected_clients
+            valuetype: gauge
+            path: "{ .connected_clients }"
+            help: Number of connected clients to the streaming API
+{{- end }}

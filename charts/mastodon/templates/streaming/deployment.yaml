@@ -84,7 +84,41 @@ spec:
             failureThreshold: 3
           resources:
             {{- toYaml .Values.mastodon.streaming.deployment.resources | nindent 12 }}
+        {{- if .Values.mastodon.streaming.deployment.prometheusJsonExporterSidecar.enabled }}
+        - name: {{ .Chart.Name }}-streaming-prometheus-json-exporter
+          securityContext:
+            {{- toYaml .Values.mastodon.streaming.deployment.prometheusJsonExporterSidecar.securityContext | nindent 12 }}
+          image: "{{ .Values.mastodon.streaming.deployment.prometheusJsonExporterSidecar.image.repository }}:{{ .Values.mastodon.streaming.deployment.prometheusJsonExporterSidecar.image.tag}}"
+          imagePullPolicy: {{ .Values.mastodon.streaming.deployment.prometheusJsonExporterSidecar.image.pullPolicy }}
+          ports:
+            - name: metrics
+              containerPort: 7979
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /probe?module=default&target=http://localhost:4000/status
+              port: metrics
+            periodSeconds: 30
+            timeoutSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /probe?module=default&target=http://localhost:4000/status
+              port: metrics
+            periodSeconds: 30
+            timeoutSeconds: 30
+            failureThreshold: 3
+          volumeMounts:
+            - name: prometheus-json-exporter-config
+              mountPath: /config.yml
+              subPath: config.yml
+        {{- end }}
       volumes:
+      {{ if .Values.mastodon.streaming.deployment.prometheusJsonExporterSidecar.enabled }}
+        - name: prometheus-json-exporter-config
+          configMap:
+            name: {{ include "mastodon.fullname" . }}-streaming-json-exporter-config
+      {{ end }}
       {{- range .Values.mastodon.streaming.additionalMounts }}
         - {{- toYaml .volume | nindent 10 }}
       {{- end }}

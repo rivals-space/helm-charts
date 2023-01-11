@@ -1,0 +1,22 @@
+{{- if .Values.mastodon.streaming.deployment.prometheusJsonExporterSidecar.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "mastodon.fullname" . }}-streaming
+  labels:
+    {{- include "mastodon.labels" . | nindent 4 }}
+  namespace: {{ .Values.mastodon.streaming.deployment.prometheusJsonExporterSidecar.serviceMonitor.namespace }}
+spec:
+  endpoints:
+    - interval: 30s
+      path: /metrics
+      port: http
+      scrapeTimeout: 10s
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- include "mastodon.labels" . | nindent 6 }}
+      {{- include "mastodon.selectorLabels.streaming" . | nindent 6}}
+{{- end }}

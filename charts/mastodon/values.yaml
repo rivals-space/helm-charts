@@ -10,7 +10,7 @@ fullnameOverride: ""
 
 mastodon:
   image:
-    repository: "tootsuite/mastodon"
+    repository: "ghcr.io/rivals-space/rivals-mastodon"
     pullPolicy: IfNotPresent
     tag: ""
   settings:
@@ -121,6 +121,16 @@ mastodon:
       nodeSelector: {}
       tolerations: []
       affinity: {}
+      prometheusJsonExporterSidecar:
+        enabled: false
+        securityContext: {}
+        image:
+          repository: "quay.io/prometheuscommunity/json-exporter"
+          pullPolicy: IfNotPreset
+          tag: "v0.5.0"
+        serviceMonitor:
+          enabled: false
+          namespace: prometheus
     service:
       type: ClusterIP
       port: 4000

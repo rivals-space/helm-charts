@@ -4,6 +4,7 @@ metadata:
   name: {{ include "mastodon.fullname" . }}-streaming
   labels:
     {{- include "mastodon.labels" . | nindent 4 }}
+    {{- include "mastodon.selectorLabels.streaming" . | nindent 4}}
 spec:
   type: {{ .Values.mastodon.streaming.service.type }}
   ports:
@@ -11,6 +12,12 @@ spec:
       targetPort: streaming
       protocol: TCP
       name: streaming
+{{- if .Values.mastodon.streaming.deployment.prometheusJsonExporterSidecar.enabled }}
+    - port: 7979
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+{{- end }}
   selector:
     {{- include "mastodon.selectorLabels.global" . | nindent 4 }}
     {{- include "mastodon.selectorLabels.streaming" . | nindent 4 }}

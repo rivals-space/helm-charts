@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.0]
+### Added
+- streaming prometheus stats
+
+### Changed
+- switch to rivals.space docker image
+
 ## [2.2.1]
 ### Fixed
 - remove probes on toolbox pod
