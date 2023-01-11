@@ -1,0 +1,23 @@
+{{- if .Values.mastodon.streaming.keda.enabled -}}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ include "mastodon.fullname" . }}-streaming
+  labels:
+    {{- include "mastodon.labels" $ | nindent 4 }}
+spec:
+  cooldownPeriod: {{ .Values.mastodon.streaming.keda.cooldownPeriod }}
+  maxReplicaCount: {{ .Values.mastodon.streaming.keda.maxReplicaCount }}
+  minReplicaCount: {{ .Values.mastodon.streaming.keda.minReplicaCount }}
+  pollingInterval: {{ .Values.mastodon.streaming.keda.pollingInterval }}
+  scaleTargetRef:
+    name: {{ include "mastodon.fullname" . }}-streaming
+  triggers:
+    - type: prometheus
+      metadata:
+        # Required
+        serverAddress: {{ .Values.mastodon.streaming.keda.prometheus.url | quote }}
+        metricName: {{ .Values.mastodon.streaming.keda.prometheus.metricName | quote }}
+        threshold: {{ .Values.mastodon.streaming.keda.prometheus.threshold | quote }}
+        query: {{ tpl .Values.mastodon.streaming.keda.prometheus.query . | quote }}
+{{- end }}

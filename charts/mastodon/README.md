@@ -1,6 +1,6 @@
 # mastodon
 
-![Version: 2.1.1](https://img.shields.io/badge/Version-2.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.0.2](https://img.shields.io/badge/AppVersion-v4.0.2-informational?style=flat-square)
+![Version: 2.4.0](https://img.shields.io/badge/Version-2.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.1](https://img.shields.io/badge/AppVersion-1.0.1-informational?style=flat-square)
 
 Rivals.space Mastodon helm chart
 
@@ -15,6 +15,7 @@ Rivals.space Mastodon helm chart
 | Repository | Name | Version |
 |------------|------|---------|
 | https://charts.bitnami.com/bitnami | redis | 17.3.11 |
+| https://charts.softonic.io | keda | 2.8.2 |
 
 ## Values
 
@@ -28,6 +29,7 @@ Rivals.space Mastodon helm chart
 | ingress.hosts[0].host | string | `"chart-example.local"` |  |
 | ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | ingress.tls | list | `[]` |  |
+| keda.enabled | bool | `false` |  |
 | keda.redis.host | string | `""` |  |
 | keda.redis.port | string | `"6379"` |  |
 | mastodon.cronjobs.additionalMounts | list | `[]` |  |
@@ -40,7 +42,7 @@ Rivals.space Mastodon helm chart
 | mastodon.extraEnv.fromConfigMap | string | `""` |  |
 | mastodon.extraEnv.fromSecret | string | `""` |  |
 | mastodon.image.pullPolicy | string | `"IfNotPresent"` |  |
-| mastodon.image.repository | string | `"tootsuite/mastodon"` |  |
+| mastodon.image.repository | string | `"ghcr.io/rivals-space/rivals-mastodon"` |  |
 | mastodon.image.tag | string | `""` |  |
 | mastodon.settings.assets.s3.aliasHost | string | `""` |  |
 | mastodon.settings.assets.s3.bucket | string | `""` |  |
@@ -163,13 +165,16 @@ Rivals.space Mastodon helm chart
 | mastodon.sidekiq.workers[5].tolerations | list | `[]` |  |
 | mastodon.streaming.additionalMounts | list | `[]` |  |
 | mastodon.streaming.deployment.affinity | object | `{}` |  |
-| mastodon.streaming.deployment.autoscaling.enabled | bool | `false` |  |
-| mastodon.streaming.deployment.autoscaling.maxReplicas | int | `100` |  |
-| mastodon.streaming.deployment.autoscaling.minReplicas | int | `1` |  |
-| mastodon.streaming.deployment.autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
 | mastodon.streaming.deployment.nodeSelector | object | `{}` |  |
 | mastodon.streaming.deployment.podAnnotations | object | `{}` |  |
 | mastodon.streaming.deployment.podSecurityContext | object | `{}` |  |
+| mastodon.streaming.deployment.prometheusJsonExporterSidecar.enabled | bool | `false` |  |
+| mastodon.streaming.deployment.prometheusJsonExporterSidecar.image.pullPolicy | string | `"IfNotPresent"` |  |
+| mastodon.streaming.deployment.prometheusJsonExporterSidecar.image.repository | string | `"quay.io/prometheuscommunity/json-exporter"` |  |
+| mastodon.streaming.deployment.prometheusJsonExporterSidecar.image.tag | string | `"v0.5.0"` |  |
+| mastodon.streaming.deployment.prometheusJsonExporterSidecar.securityContext | object | `{}` |  |
+| mastodon.streaming.deployment.prometheusJsonExporterSidecar.serviceMonitor.enabled | bool | `false` |  |
+| mastodon.streaming.deployment.prometheusJsonExporterSidecar.serviceMonitor.namespace | string | `"prometheus"` |  |
 | mastodon.streaming.deployment.replicas | int | `2` |  |
 | mastodon.streaming.deployment.resources.limits.memory | string | `"300Mi"` |  |
 | mastodon.streaming.deployment.resources.requests.cpu | string | `"50m"` |  |
@@ -177,9 +182,29 @@ Rivals.space Mastodon helm chart
 | mastodon.streaming.deployment.securityContext | object | `{}` |  |
 | mastodon.streaming.deployment.tolerations | list | `[]` |  |
 | mastodon.streaming.extraEnv.env | list | `[]` |  |
+| mastodon.streaming.keda.cooldownPeriod | int | `300` |  |
+| mastodon.streaming.keda.enabled | bool | `false` |  |
+| mastodon.streaming.keda.listLength | int | `50` |  |
+| mastodon.streaming.keda.maxReplicaCount | int | `10` |  |
+| mastodon.streaming.keda.minReplicaCount | int | `1` |  |
+| mastodon.streaming.keda.pollingInterval | int | `30` |  |
+| mastodon.streaming.keda.prometheus.metricName | string | `"connected_clients"` |  |
+| mastodon.streaming.keda.prometheus.query | string | `"avg(connected_clients{service={{ printf \"%s-streaming\" (include \"mastodon.fullname\" .) | squote }}})"` |  |
+| mastodon.streaming.keda.prometheus.threshold | int | `50` |  |
+| mastodon.streaming.keda.prometheus.url | string | `""` |  |
 | mastodon.streaming.service.port | int | `4000` |  |
 | mastodon.streaming.service.type | string | `"ClusterIP"` |  |
 | mastodon.streaming.settings.workers | string | `"1"` |  |
+| mastodon.toolbox.additionalMounts | list | `[]` |  |
+| mastodon.toolbox.deployment.affinity | object | `{}` |  |
+| mastodon.toolbox.deployment.nodeSelector | object | `{}` |  |
+| mastodon.toolbox.deployment.podAnnotations | object | `{}` |  |
+| mastodon.toolbox.deployment.podSecurityContext | object | `{}` |  |
+| mastodon.toolbox.deployment.resources | object | `{}` |  |
+| mastodon.toolbox.deployment.securityContext | object | `{}` |  |
+| mastodon.toolbox.deployment.tolerations | list | `[]` |  |
+| mastodon.toolbox.enabled | bool | `false` |  |
+| mastodon.toolbox.extraEnv.env | list | `[]` |  |
 | mastodon.web.additionalMounts | list | `[]` |  |
 | mastodon.web.deployment.affinity | object | `{}` |  |
 | mastodon.web.deployment.autoscaling.enabled | bool | `false` |  |

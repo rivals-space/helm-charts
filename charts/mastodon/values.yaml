@@ -103,12 +103,6 @@ mastodon:
       env: []
     deployment:
       replicas: 2
-      autoscaling:
-        enabled: false
-        minReplicas: 1
-        maxReplicas: 100
-        targetCPUUtilizationPercentage: 80
-        # targetMemoryUtilizationPercentage: 80
       podAnnotations: {}
       podSecurityContext: {}
       securityContext: {}
@@ -134,6 +128,18 @@ mastodon:
     service:
       type: ClusterIP
       port: 4000
+    keda:
+      enabled: false
+      cooldownPeriod: 300
+      maxReplicaCount: 10
+      pollingInterval: 30
+      minReplicaCount: 1
+      listLength: 50
+      prometheus:
+        url: ""
+        threshold: 50
+        metricName: connected_clients
+        query: 'avg(connected_clients{service={{ printf "%s-streaming" (include "mastodon.fullname" .) | squote }}})'
     additionalMounts: []
     #    - volumeMount:
     #        name: pgsql-certificate
@@ -340,6 +346,8 @@ mastodon:
     env: []
 
 keda:
+  # Enable keda deployment
+  enabled: false
   # If not using the embed redis server, add host & port here
   redis:
     host: ""
