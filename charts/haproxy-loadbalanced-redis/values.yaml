@@ -1,0 +1,63 @@
+# Default values for haproxy-loadbalanced-redis.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+haproxy:
+  containerPorts:
+    redis: 6379
+
+  config: |
+    global
+      log stdout format raw local0
+      maxconn 1024
+
+    resolvers resolvconf
+      parse-resolv-conf
+
+    defaults
+      log global
+      timeout client 5s
+      timeout connect 5s
+      timeout server 5s
+
+    frontend http
+      bind :80
+      default_backend stats
+
+    backend stats
+      mode http
+      stats enable
+
+    stats enable
+      stats uri /
+      stats refresh 5s
+      stats show-legends
+      stats admin if TRUE
+
+
+    frontend redis-primary
+      bind *:6379
+      default_backend redis-backend
+
+    backend redis-backend
+      mode tcp
+      balance first
+      option tcp-check
+
+      tcp-check send info\ replication\r\n
+      tcp-check expect string role:master
+
+      server-template redis-node 3 _tcp-redis._tcp.{{ printf "%s-headless" .Release.Name }}.redis-test.svc.cluster.local resolvers resolvconf check fall 1 rise 1 inter 500ms
+
+redis:
+  architecture: 'replication'
+  auth:
+    enabled: false
+    sentinel: false
+  master:
+    persistence:
+      enabled: false
+  replica:
+    replicaCount: 3
+  sentinel:
+    enabled: true
