@@ -16,7 +16,7 @@ spec:
   selector:
     matchLabels:
       {{- include "mastodon.selectorLabels.global" . | nindent 6 }}
-      {{- include "mastodon.selectorLabels.toolbox" . | nindent 8 }}
+      {{- include "mastodon.selectorLabels.toolbox" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.mastodon.streaming.deployment.podAnnotations }}
