@@ -6,4 +6,5 @@ chart-dirs:
 chart-repos:
   - bitnami=https://charts.bitnami.com/bitnami
   - softonic=https://charts.softonic.io
+  - haproxytech=https://haproxytech.github.io/helm-charts
 helm-extra-args: --timeout 600s
