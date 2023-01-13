@@ -1,6 +1,6 @@
 {{ if .Values.mastodon.toolbox.enabled }}
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: {{ include "mastodon.fullname" . }}-toolbox
   {{- with .Values.mastodon.toolbox.deployment.podAnnotations }}
@@ -8,69 +8,85 @@ metadata:
       {{- toYaml . | nindent 8 }}
   {{- end }}
   labels:
-      {{- include "mastodon.selectorLabels.global" . | nindent 8 }}
-      {{- include "mastodon.selectorLabels.toolbox" . | nindent 8 }}
+    {{- include "mastodon.selectorLabels.global" . | nindent 4 }}
+    {{- include "mastodon.selectorLabels.toolbox" . | nindent 4 }}
 spec:
-  {{- with .Values.imagePullSecrets }}
-  imagePullSecrets:
-    {{- toYaml . | nindent 8 }}
-  {{- end }}
-  securityContext:
-    {{- toYaml .Values.mastodon.toolbox.deployment.podSecurityContext | nindent 8 }}
-  containers:
-    - name: {{ .Chart.Name }}-toolbox
-      image: "{{ .Values.mastodon.image.repository }}:{{ .Values.mastodon.image.tag | default .Chart.AppVersion }}"
-      args:
-        - sh
-        - -c
-        - tail -f /dev/null
-      imagePullPolicy: {{ .Values.mastodon.image.pullPolicy }}
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      {{- include "mastodon.selectorLabels.global" . | nindent 6 }}
+      {{- include "mastodon.selectorLabels.streaming" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.mastodon.streaming.deployment.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "mastodon.selectorLabels.global" . | nindent 8 }}
+        {{- include "mastodon.selectorLabels.toolbox" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       securityContext:
-          {{- toYaml .Values.mastodon.toolbox.deployment.securityContext | nindent 12 }}
-      volumeMounts:
-        {{- range .Values.mastodon.toolbox.additionalMounts }}
-        - {{- toYaml .volumeMount | nindent 14 }}
+        {{- toYaml .Values.mastodon.toolbox.deployment.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-toolbox
+          image: "{{ .Values.mastodon.image.repository }}:{{ .Values.mastodon.image.tag | default .Chart.AppVersion }}"
+          args:
+            - sh
+            - -c
+            - tail -f /dev/null
+          imagePullPolicy: {{ .Values.mastodon.image.pullPolicy }}
+          securityContext:
+              {{- toYaml .Values.mastodon.toolbox.deployment.securityContext | nindent 12 }}
+          volumeMounts:
+            {{- range .Values.mastodon.toolbox.additionalMounts }}
+            - {{- toYaml .volumeMount | nindent 14 }}
+            {{- end }}
+          env:
+            {{- with .Values.mastodon.extraEnv.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- with .Values.mastodon.toolbox.extraEnv.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "mastodon.fullname" . }}-env
+            - secretRef:
+                name: {{ include "mastodon.fullname" . }}-env
+              {{- if .Values.mastodon.extraEnv.fromConfigMap }}
+            - configMapRef:
+                name: {{ .Values.mastodon.extraEnv.fromConfigMap }}
+              {{- end }}
+              {{- if .Values.mastodon.extraEnv.fromSecret }}
+            - secretRef:
+                name: {{ .Values.mastodon.extraEnv.fromSecret }}
+              {{- end }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          resources:
+              {{- toYaml .Values.mastodon.toolbox.deployment.resources | nindent 12 }}
+      volumes:
+        {{ range .Values.mastodon.toolbox.additionalMounts }}
+        - {{- toYaml .volume | nindent 10 }}
+        {{ end }}
+        {{ with .Values.mastodon.toolbox.deployment.nodeSelector }}
+      nodeSelector:
+          {{- toYaml . | nindent 8 }}
         {{- end }}
-      env:
-        {{- with .Values.mastodon.extraEnv.env }}
-        {{- toYaml . | nindent 12 }}
+        {{- with .Values.mastodon.toolbox.deployment.affinity }}
+      affinity:
+          {{- toYaml . | nindent 8 }}
         {{- end }}
-        {{- with .Values.mastodon.toolbox.extraEnv.env }}
-        {{- toYaml . | nindent 12 }}
+        {{- with .Values.mastodon.toolbox.deployment.tolerations }}
+      tolerations:
+          {{- toYaml . | nindent 8 }}
         {{- end }}
-      envFrom:
-        - configMapRef:
-            name: {{ include "mastodon.fullname" . }}-env
-        - secretRef:
-            name: {{ include "mastodon.fullname" . }}-env
-          {{- if .Values.mastodon.extraEnv.fromConfigMap }}
-        - configMapRef:
-            name: {{ .Values.mastodon.extraEnv.fromConfigMap }}
-          {{- end }}
-          {{- if .Values.mastodon.extraEnv.fromSecret }}
-        - secretRef:
-            name: {{ .Values.mastodon.extraEnv.fromSecret }}
-          {{- end }}
-      ports:
-        - name: http
-          containerPort: 3000
-          protocol: TCP
-      resources:
-          {{- toYaml .Values.mastodon.toolbox.deployment.resources | nindent 12 }}
-  volumes:
-    {{ range .Values.mastodon.toolbox.additionalMounts }}
-    - {{- toYaml .volume | nindent 10 }}
-    {{ end }}
-    {{ with .Values.mastodon.toolbox.deployment.nodeSelector }}
-  nodeSelector:
-      {{- toYaml . | nindent 8 }}
     {{- end }}
-    {{- with .Values.mastodon.toolbox.deployment.affinity }}
-  affinity:
-      {{- toYaml . | nindent 8 }}
-    {{- end }}
-    {{- with .Values.mastodon.toolbox.deployment.tolerations }}
-  tolerations:
-      {{- toYaml . | nindent 8 }}
-    {{- end }}
-{{- end }}
