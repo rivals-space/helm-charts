@@ -19,22 +19,22 @@ haproxy:
       timeout client 5s
       timeout connect 5s
       timeout server 5s
-    
+
     frontend http
       bind :80
       default_backend stats
-  
+
     backend stats
       mode http
       stats enable
-  
+
     stats enable
       stats uri /
       stats refresh 5s
       stats show-legends
       stats admin if TRUE
-  
-  
+
+
     frontend redis-primary
       bind *:6379
       default_backend redis-backend
@@ -61,4 +61,3 @@ redis:
     replicaCount: 3
   sentinel:
     enabled: true
-
