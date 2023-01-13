@@ -1,8 +1,14 @@
 # haproxy-loadbalanced-redis
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 A Helm chart for Kubernetes
+
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| emilweth | <coucou@emi.cool> |  |
 
 ## Requirements
 
@@ -15,7 +21,7 @@ A Helm chart for Kubernetes
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| haproxy.config | string | `"global\n  log stdout format raw local0\n  maxconn 1024\n\nresolvers resolvconf\n  parse-resolv-conf\n\ndefaults\n  log global\n  timeout client 5s\n  timeout connect 5s\n  timeout server 5s\n\nfrontend http\n  bind :80\n  default_backend stats\n\nbackend stats\n  mode http\n  stats enable\n\nstats enable\n  stats uri /\n  stats refresh 5s\n  stats show-legends\n  stats admin if TRUE\n\n\nfrontend redis-primary\n  bind *:6379\n  default_backend redis-backend\n\nbackend redis-backend\n  mode tcp\n  balance first\n  option tcp-check\n\n  tcp-check send info\\ replication\\r\\n\n  tcp-check expect string role:master\n\n  server-template redis-node 3 _tcp-redis._tcp.{{ printf \"%s-headless\" .Release.Name }}.redis-test.svc.cluster.local resolvers resolvconf check fall 1 rise 1 inter 500ms\n"` |  |
+| haproxy.config | string | `"global\n  log stdout format raw local0\n  maxconn 1024\n\nresolvers resolvconf\n  parse-resolv-conf\n\ndefaults\n  log global\n  timeout client 5s\n  timeout connect 5s\n  timeout server 5s\n\nfrontend http\n  bind :80\n  default_backend stats\n\nbackend stats\n  mode http\n  stats enable\n\nstats enable\n  stats uri /\n  stats refresh 5s\n  stats show-legends\n  stats admin if TRUE\n\n\nfrontend redis-primary\n  bind *:6379\n  default_backend redis-backend\n\nbackend redis-backend\n  mode tcp\n  balance first\n  option tcp-check\n\n  tcp-check send info\\ replication\\r\\n\n  tcp-check expect string role:master\n\n  server-template redis-node 3 _tcp-redis._tcp.{{ printf \"%s-headless\" .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local resolvers resolvconf check fall 1 rise 1 inter 500ms\n"` |  |
 | haproxy.containerPorts.redis | int | `6379` |  |
 | redis.architecture | string | `"replication"` |  |
 | redis.auth.enabled | bool | `false` |  |
