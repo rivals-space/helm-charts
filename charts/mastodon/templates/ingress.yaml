@@ -42,7 +42,7 @@ spec:
                 port:
                   number: {{ $.Values.nginxReverse.service.port }}
           - path: {{ .path }}api/v1/streaming/
-            pathType: Exact
+            pathType: Prefix
             backend:
               service:
                 name: {{ include "mastodon.fullname" $ }}-streaming
