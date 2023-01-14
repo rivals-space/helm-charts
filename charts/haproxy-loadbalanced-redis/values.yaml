@@ -16,9 +16,9 @@ haproxy:
 
     defaults
       log global
-      timeout client 5s
+      timeout client 600s
       timeout connect 5s
-      timeout server 5s
+      timeout server 600s
 
     frontend http
       bind :80
