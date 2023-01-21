@@ -15,9 +15,8 @@ spec:
       {{- include "mastodon.selectorLabels.nginxReverse" . | nindent 6 }}
   template:
     metadata:
-      annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/nginx-statics/configmap.yaml") $ | sha256sum }}
       {{- with .Values.nginxReverse.deployment.podAnnotations }}
+      annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
