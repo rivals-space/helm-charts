@@ -356,9 +356,9 @@ keda:
 nginxReverse:
   deployment:
     image:
-      repository: nginxinc/nginx-unprivileged
+      repository: "ghcr.io/rivals-space/rivals-nginx"
       pullPolicy: IfNotPresent
-      tag: stable-alpine
+      tag: ""
     replicas: 2
     autoscaling:
       enabled: false

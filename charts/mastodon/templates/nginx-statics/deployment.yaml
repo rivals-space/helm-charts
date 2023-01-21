@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "mastodon.fullname" . }}-nginx-reverse
+  name: {{ include "mastodon.fullname" . }}-nginx-statics
   labels:
     {{- include "mastodon.labels" . | nindent 4 }}
 spec:
@@ -29,24 +29,13 @@ spec:
       {{- end }}
       securityContext:
         {{- toYaml .Values.nginxReverse.deployment.podSecurityContext | nindent 8 }}
-      initContainers:
-        - name: {{ .Chart.Name }}-nginx-copy-assets
-          image: "{{ .Values.mastodon.image.repository }}:{{ .Values.mastodon.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.mastodon.image.pullPolicy }}
-          volumeMounts:
-            - name: assets
-              mountPath: /target
-          command: [ sh, -c ]
-          args:
-            - |
-              cp -vr /opt/mastodon/public/* /target
       containers:
-        - name: {{ .Chart.Name }}-nginx-reverse
+        - name: {{ .Chart.Name }}-nginx-statics
           {{- if .Values.nginxReverse.deployment.securityContext}}
           securityContext:
             {{- toYaml .Values.nginxReverse.deployment.securityContext | nindent 12 }}
           {{- end }}
-          image: "{{ .Values.nginxReverse.deployment.image.repository }}:{{ .Values.nginxReverse.deployment.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.nginxReverse.deployment.image.repository }}:{{ $.Values.nginxReverse.deployment.image.tag | default $.Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.mastodon.image.pullPolicy }}
           ports:
             - name: http
@@ -66,29 +55,10 @@ spec:
           resources:
             {{- toYaml .Values.nginxReverse.deployment.resources | nindent 12 }}
           volumeMounts:
-            - name: nginx-cache
-              mountPath: /var/cache/nginx
-            - name: nginx-config
-              mountPath: /etc/nginx/nginx.conf
-              subPath: nginx.conf
-            - name: nginx-config
-              mountPath: /etc/nginx/conf.d/default.conf
-              subPath: default.conf
-            - name: assets
-              mountPath: /opt/mastodon/public/
           {{- range .Values.nginxReverse.additionalMounts }}
             - {{- toYaml .volumeMount | nindent 14 }}
           {{- end }}
       volumes:
-        - name: nginx-cache
-          emptyDir:
-            medium: Memory
-            sizeLimit: 2G
-        - name: nginx-config
-          configMap:
-            name: {{ include "mastodon.fullname" . }}-nginx-reverse-config
-        - name: assets
-          emptyDir: {}
       {{- range .Values.nginxReverse.additionalMounts }}
         - {{- toYaml .volume | nindent 10 }}
       {{- end }}

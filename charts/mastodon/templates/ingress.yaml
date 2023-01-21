@@ -29,25 +29,37 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
+    - host: {{ .Values.ingress.host }}
       http:
         paths:
-          {{- range .paths }}
-          - path: {{ .path }}
-            pathType: Prefix
+          - path: /sw.js
+            pathType: Exact
             backend:
               service:
-                name: {{ include "mastodon.fullname" $ }}-nginx-reverse
+                name: {{ include "mastodon.fullname" . }}-nginx-statics
                 port:
                   number: {{ $.Values.nginxReverse.service.port }}
-          - path: {{ .path }}api/v1/streaming/
+        {{- range list "/assets" "/avatars" "/emoji" "/headers" "/packs" "/shortcuts" "/sounds" "/system"  }}
+          - path: {{ . }}
             pathType: Prefix
             backend:
               service:
-                name: {{ include "mastodon.fullname" $ }}-streaming
+                name: {{ include "mastodon.fullname" $ }}-nginx-statics
                 port:
-                  number: {{ $.Values.mastodon.streaming.service.port }}
-          {{- end }}
-    {{- end }}
+                  number: {{ $.Values.nginxReverse.service.port }}
+        {{- end }}
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "mastodon.fullname" . }}-web
+                port:
+                  number: {{ .Values.mastodon.web.service.port }}
+          - path: /api/v1/streaming/
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "mastodon.fullname" . }}-streaming
+                port:
+                  number: {{ .Values.mastodon.streaming.service.port }}
 {{- end }}
