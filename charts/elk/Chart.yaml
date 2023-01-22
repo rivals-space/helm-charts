@@ -1,0 +1,9 @@
+apiVersion: v2
+name: elk
+description: A nimble Mastodon web client
+type: application
+version: 0.1.0
+appVersion: "main"
+maintainers:
+  - name: emilweth
+    email: coucou@emi.cool
