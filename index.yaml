@@ -3,6 +3,19 @@ entries:
   elk:
   - apiVersion: v2
     appVersion: main
+    created: "2023-01-22T00:20:45.859435564Z"
+    description: A nimble Mastodon web client
+    digest: 433a55a94e158c01d48535f556bfef7b9f0738af4bb6e8a3f55608ff69d6a974
+    maintainers:
+    - email: coucou@emi.cool
+      name: emilweth
+    name: elk
+    type: application
+    urls:
+    - https://github.com/rivals-space/helm-charts/releases/download/elk-0.1.1/elk-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: main
     created: "2023-01-22T00:06:45.933724029Z"
     description: A nimble Mastodon web client
     digest: fd67741bc48030c3d71d45ae8b8edd34b4a1f1bb0c008227543d00cf7c24599d
@@ -515,4 +528,4 @@ entries:
     urls:
     - https://github.com/rivals-space/helm-charts/releases/download/mastodon-1.0.1/mastodon-1.0.1.tgz
     version: 1.0.1
-generated: "2023-01-22T00:06:45.93378353Z"
+generated: "2023-01-22T00:20:45.859766064Z"
