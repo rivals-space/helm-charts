@@ -9,7 +9,10 @@ metadata:
 spec:
   containers:
     - name: wget
-      image: busybox
+      image: busybox:1.35
       command: ['wget']
       args: ['{{ include "elk.fullname" . }}:{{ .Values.service.port }}']
+      securityContext:
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
   restartPolicy: Never
