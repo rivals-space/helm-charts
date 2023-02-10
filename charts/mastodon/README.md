@@ -1,6 +1,6 @@
 # mastodon
 
-![Version: 2.4.4](https://img.shields.io/badge/Version-2.4.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.1](https://img.shields.io/badge/AppVersion-1.0.1-informational?style=flat-square)
+![Version: 3.0.1](https://img.shields.io/badge/Version-3.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.6.0](https://img.shields.io/badge/AppVersion-1.6.0-informational?style=flat-square)
 
 Rivals.space Mastodon helm chart
 
@@ -168,18 +168,13 @@ Rivals.space Mastodon helm chart
 | mastodon.streaming.deployment.nodeSelector | object | `{}` |  |
 | mastodon.streaming.deployment.podAnnotations | object | `{}` |  |
 | mastodon.streaming.deployment.podSecurityContext | object | `{}` |  |
-| mastodon.streaming.deployment.prometheusJsonExporterSidecar.enabled | bool | `false` |  |
-| mastodon.streaming.deployment.prometheusJsonExporterSidecar.image.pullPolicy | string | `"IfNotPresent"` |  |
-| mastodon.streaming.deployment.prometheusJsonExporterSidecar.image.repository | string | `"quay.io/prometheuscommunity/json-exporter"` |  |
-| mastodon.streaming.deployment.prometheusJsonExporterSidecar.image.tag | string | `"v0.5.0"` |  |
-| mastodon.streaming.deployment.prometheusJsonExporterSidecar.securityContext | object | `{}` |  |
-| mastodon.streaming.deployment.prometheusJsonExporterSidecar.serviceMonitor.enabled | bool | `false` |  |
-| mastodon.streaming.deployment.prometheusJsonExporterSidecar.serviceMonitor.namespace | string | `"prometheus"` |  |
 | mastodon.streaming.deployment.replicas | int | `2` |  |
 | mastodon.streaming.deployment.resources.limits.memory | string | `"300Mi"` |  |
 | mastodon.streaming.deployment.resources.requests.cpu | string | `"50m"` |  |
 | mastodon.streaming.deployment.resources.requests.memory | string | `"200Mi"` |  |
 | mastodon.streaming.deployment.securityContext | object | `{}` |  |
+| mastodon.streaming.deployment.serviceMonitor.enabled | bool | `false` |  |
+| mastodon.streaming.deployment.serviceMonitor.namespace | string | `"prometheus"` |  |
 | mastodon.streaming.deployment.tolerations | list | `[]` |  |
 | mastodon.streaming.extraEnv.env | list | `[]` |  |
 | mastodon.streaming.keda.cooldownPeriod | int | `300` |  |
@@ -234,8 +229,8 @@ Rivals.space Mastodon helm chart
 | nginxReverse.deployment.autoscaling.minReplicas | int | `1` |  |
 | nginxReverse.deployment.autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
 | nginxReverse.deployment.image.pullPolicy | string | `"IfNotPresent"` |  |
-| nginxReverse.deployment.image.repository | string | `"nginxinc/nginx-unprivileged"` |  |
-| nginxReverse.deployment.image.tag | string | `"stable-alpine"` |  |
+| nginxReverse.deployment.image.repository | string | `"ghcr.io/rivals-space/rivals-nginx"` |  |
+| nginxReverse.deployment.image.tag | string | `""` |  |
 | nginxReverse.deployment.nodeSelector | object | `{}` |  |
 | nginxReverse.deployment.podAnnotations | object | `{}` |  |
 | nginxReverse.deployment.podSecurityContext | object | `{}` |  |

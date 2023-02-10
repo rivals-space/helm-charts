@@ -1,19 +1,16 @@
-{{- if .Values.mastodon.streaming.deployment.prometheusJsonExporterSidecar.serviceMonitor.enabled }}
+{{- if .Values.mastodon.streaming.deployment.serviceMonitor.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ include "mastodon.fullname" . }}-streaming
   labels:
     {{- include "mastodon.labels" . | nindent 4 }}
-  namespace: {{ .Values.mastodon.streaming.deployment.prometheusJsonExporterSidecar.serviceMonitor.namespace }}
+  namespace: {{ .Values.mastodon.streaming.deployment.serviceMonitor.namespace }}
 spec:
   endpoints:
     - interval: 10s
-      path: /probe
-      params:
-        module: ["default"]
-        target: ["http://localhost:4000/status"]
-      port: metrics
+      path: /metrics
+      port: streaming
       scrapeTimeout: 10s
   namespaceSelector:
     matchNames:
