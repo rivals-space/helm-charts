@@ -91,6 +91,29 @@ entries:
   mastodon:
   - apiVersion: v2
     appVersion: 1.6.1
+    created: "2023-02-11T04:44:07.960562363Z"
+    dependencies:
+    - condition: keda.enabled
+      name: keda
+      repository: https://charts.softonic.io
+      version: 2.8.2
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.3.11
+    description: Rivals.space Mastodon helm chart
+    digest: 2b288eacbf9e257e8057ca47533378ce1ca4a5c4e63a979acba1fc5d51b20702
+    icon: https://joinmastodon.org/logos/logo-purple.svg
+    maintainers:
+    - email: coucou@emi.cool
+      name: emilweth
+    name: mastodon
+    type: application
+    urls:
+    - https://github.com/rivals-space/helm-charts/releases/download/mastodon-3.1.2/mastodon-3.1.2.tgz
+    version: 3.1.2
+  - apiVersion: v2
+    appVersion: 1.6.1
     created: "2023-02-11T02:51:48.777433563Z"
     dependencies:
     - condition: keda.enabled
@@ -597,4 +620,4 @@ entries:
     urls:
     - https://github.com/rivals-space/helm-charts/releases/download/mastodon-1.0.1/mastodon-1.0.1.tgz
     version: 1.0.1
-generated: "2023-02-11T02:51:48.778348049Z"
+generated: "2023-02-11T04:44:07.960861363Z"
