@@ -12,12 +12,6 @@ spec:
       targetPort: streaming
       protocol: TCP
       name: streaming
-{{- if .Values.mastodon.streaming.deployment.prometheusJsonExporterSidecar.enabled }}
-    - port: 7979
-      targetPort: metrics
-      protocol: TCP
-      name: metrics
-{{- end }}
   selector:
     {{- include "mastodon.selectorLabels.global" . | nindent 4 }}
     {{- include "mastodon.selectorLabels.streaming" . | nindent 4 }}
