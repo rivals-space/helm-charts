@@ -3,7 +3,7 @@ name: mastodon
 description: Rivals.space Mastodon helm chart
 icon: https://joinmastodon.org/logos/logo-purple.svg
 type: application
-version: 3.1.1
+version: 3.1.2
 appVersion: "1.6.1"
 maintainers:
   - name: emilweth
