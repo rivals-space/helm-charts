@@ -85,11 +85,6 @@ spec:
           resources:
             {{- toYaml .Values.mastodon.streaming.deployment.resources | nindent 12 }}
       volumes:
-      {{ if .Values.mastodon.streaming.deployment.prometheusJsonExporterSidecar.enabled }}
-        - name: prometheus-json-exporter-config
-          configMap:
-            name: {{ include "mastodon.fullname" . }}-streaming-json-exporter-config
-      {{ end }}
       {{- range .Values.mastodon.streaming.additionalMounts }}
         - {{- toYaml .volume | nindent 10 }}
       {{- end }}
