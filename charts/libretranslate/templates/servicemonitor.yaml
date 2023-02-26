@@ -1,0 +1,21 @@
+{{- if .Values.metrics.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "libretranslate.fullname" . }}-streaming
+  labels:
+    {{- include "libretranslate.labels" . | nindent 4 }}
+  namespace: {{ .Values.metrics.serviceMonitor.namespace | default .Release.Namespace }}
+spec:
+  endpoints:
+    - interval: 10s
+      path: /metrics
+      port: http
+      scrapeTimeout: 10s
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+    {{- include "libretranslate.selectorLabels" . | nindent 4 }}
+{{- end }}
