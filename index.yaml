@@ -88,6 +88,21 @@ entries:
     urls:
     - https://github.com/rivals-space/helm-charts/releases/download/haproxy-loadbalanced-redis-0.1.0/haproxy-loadbalanced-redis-0.1.0.tgz
     version: 0.1.0
+  libretranslate:
+  - apiVersion: v2
+    appVersion: v1.3.9
+    created: "2023-02-26T16:54:27.291583727Z"
+    description: A Helm chart for Kubernetes
+    digest: 6df7e247bd975bc6e085b8f357d991bab16a82183605f78592192744dd3958d5
+    icon: https://libretranslate.com/static/icon.svg
+    maintainers:
+    - email: coucou@emi.cool
+      name: emilweth
+    name: libretranslate
+    type: application
+    urls:
+    - https://github.com/rivals-space/helm-charts/releases/download/libretranslate-1.0.0/libretranslate-1.0.0.tgz
+    version: 1.0.0
   mastodon:
   - apiVersion: v2
     appVersion: 1.6.1
@@ -620,4 +635,4 @@ entries:
     urls:
     - https://github.com/rivals-space/helm-charts/releases/download/mastodon-1.0.1/mastodon-1.0.1.tgz
     version: 1.0.1
-generated: "2023-02-11T04:44:07.960861363Z"
+generated: "2023-02-26T16:54:27.291725526Z"
