@@ -2,7 +2,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "libretranslate.fullname" . }}-streaming
+  name: {{ include "libretranslate.fullname" . }}
   labels:
     {{- include "libretranslate.labels" . | nindent 4 }}
   namespace: {{ .Values.metrics.serviceMonitor.namespace | default .Release.Namespace }}
@@ -17,5 +17,5 @@ spec:
       - {{ .Release.Namespace }}
   selector:
     matchLabels:
-    {{- include "libretranslate.selectorLabels" . | nindent 4 }}
+      {{- include "libretranslate.selectorLabels" . | nindent 6 }}
 {{- end }}

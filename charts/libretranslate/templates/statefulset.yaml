@@ -9,7 +9,9 @@ spec:
     matchLabels:
       {{- include "libretranslate.selectorLabels" . | nindent 6 }}
   serviceName: {{ include "libretranslate.fullname" . }}
+  {{- if not .Values.autoscaling.enabled}}
   replicas: {{ .Values.replicaCount }}
+  {{- end }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
