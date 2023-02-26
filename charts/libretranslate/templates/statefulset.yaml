@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "libretranslate.fullname" . }}
+  labels:
+    {{- include "libretranslate.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "libretranslate.selectorLabels" . | nindent 6 }}
+  serviceName: {{ include "libretranslate.fullname" . }}
+  {{- if not .Values.autoscaling.enabled}}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "libretranslate.selectorLabels" . | nindent 8 }}
+    spec:
+      initContainers:
+        - name: chown-language-data-volume
+          image: alpine:3
+          command: ["chown", "1032:65534", "/home/libretranslate/.local"]
+          volumeMounts:
+            - name: language-data
+              mountPath: /home/libretranslate/.local
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: LT_HOST
+              value: "0.0.0.0"
+            {{- if .Values.metrics.enabled }}
+            - name: LT_METRICS
+              value: "1"
+            - name: PROMETHEUS_MULTIPROC_DIR
+              value: /tmp/prometheus_data
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          volumeMounts:
+            {{- if .Values.persistence.languageData.enabled }}
+            - name: language-data
+              mountPath: /home/libretranslate/.local
+            {{- end }}
+            {{- if .Values.metrics.enabled }}
+            - name: tmp-prom
+              mountPath: /tmp/prometheus_data
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          startupProbe:
+            failureThreshold: 30
+            periodSeconds: 10
+            httpGet:
+              port: http
+              path: /
+          livenessProbe:
+            periodSeconds: 5
+            httpGet:
+              port: http
+              path: /
+          readinessProbe:
+            periodSeconds: 5
+            httpGet:
+              port: http
+              path: /
+      volumes:
+        {{- if .Values.metrics.enabled }}
+        - name: tmp-prom
+          emptyDir: {}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  volumeClaimTemplates:
+    {{- if .Values.persistence.languageData.enabled }}
+    - metadata:
+        name: language-data
+      spec:
+        accessModes: [ {{ .Values.persistence.languageData.accessMode | quote }} ]
+        {{- if .Values.persistence.languageData.storageClass }}
+        storageClassName: {{ .Values.persistence.languageData.storageClass | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.languageData.size | quote }}
+    {{- end }}
