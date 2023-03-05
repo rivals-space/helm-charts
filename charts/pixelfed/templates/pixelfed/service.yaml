@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "pixelfed.fullname" . }}-fpm
+  labels:
+    {{- include "pixelfed.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.pixelfed.service.type }}
+  ports:
+    - port: {{ .Values.pixelfed.service.port }}
+      targetPort: fpm
+      protocol: TCP
+      name: fpm
+  selector:
+    {{- include "pixelfed.selectorLabels" . | nindent 4 }}

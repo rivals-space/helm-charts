@@ -1,0 +1,114 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pixelfed.fullname" . }}-nginx
+  labels:
+    {{- include "pixelfed.labels" . | nindent 4 }}
+    app.kubernetes.io/component: nginx
+spec:
+  {{- if not .Values.nginx.autoscaling.enabled }}
+  replicas: {{ .Values.nginx.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "pixelfed.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: nginx
+  template:
+    metadata:
+      {{- with .Values.nginx.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "pixelfed.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: nginx
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.nginx.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: tmpdir
+          emptyDir: { }
+        - name: public
+          emptyDir: { }
+        - name: nginx-config
+          configMap:
+            name: {{ include "pixelfed.fullname" . }}-nginx-config
+      initContainers:
+        - name: copy-public
+          image: "{{ .Values.pixelfed.image.repository | required "Image repository is required" }}:{{ .Values.pixelfed.image.tag | default .Chart.AppVersion | required "Image tag is required" }}"
+          imagePullPolicy: {{ .Values.pixelfed.image.pullPolicy }}
+          command: [ sh, -c ]
+          args:
+            - |
+              cp -rv /srv/app/public/* /target/srv/app/public;
+              rm /target/srv/app/public/storage;
+              mkdir /target/srv/app/public/storage;
+              cp -rv /srv/app/storage/app/public/* /target/srv/app/public/storage
+          volumeMounts:
+            - mountPath: /target/srv/app/public
+              name: public
+              readOnly: false
+      containers:
+        - name: nginx
+          securityContext:
+            {{- toYaml .Values.nginx.securityContext | nindent 12 }}
+          image: {{ printf "%s:%s" .Values.nginx.image .Values.nginx.tag | quote }}
+          imagePullPolicy: {{ .Values.nginx.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: health
+              containerPort: 8081
+              protocol: TCP
+          volumeMounts:
+            - name: tmpdir
+              mountPath: /tmp
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+            - name: public
+              mountPath: /srv/app/public
+              readOnly: true
+            {{- range $key, $value := .Values.commonVolumes }}
+            - name: common-{{ $key }}
+              mountPath: {{ $value.location }}
+            {{- end }}
+          {{- with .Values.nginx.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end}}
+          {{- with .Values.nginx.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end}}
+          livenessProbe:
+            httpGet:
+              port: health
+              path: /nginx-health
+            initialDelaySeconds: 0
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              port: health
+              path: /nginx-health
+            initialDelaySeconds: 1
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.nginx.resources | nindent 12 }}
+      {{- with .Values.nginx.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nginx.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nginx.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
